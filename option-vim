@@ -1,0 +1,24 @@
+" show line number
+set number
+
+" show the position now
+set ruler
+
+" highlight the result of search
+set hlsearch
+
+" automatically match the first one while typing each word
+set incsearch
+
+" ignore case
+set ignorecase
+
+" indentation will follow the last line
+set autoindent
+
+" set TAB to 4 blanks
+set softtabstop=4
+
+" automatically match the other parentheses
+set showmatch
+
