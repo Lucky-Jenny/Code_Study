@@ -1,0 +1,3 @@
+#!/bin/bash
+
+sed -i "My Name" `grep -rn "MY name" .
