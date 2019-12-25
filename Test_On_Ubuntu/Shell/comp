@@ -1,0 +1,38 @@
+<<<<<<< HEAD
+
+
+#!/bin/bash
+
+#The file can compile the files in an easy way.
+
+if [ "$1" == "" ];
+then
+  read -p "Please input the filename:" x
+else
+  x=$1
+=======
+#!/bin/bash
+
+if [ "$1" == "" ]; then
+   read -p "Please input the filename:" x
+else
+   x=$1
+>>>>>>> 0441211... add from compile server
+fi
+
+if [ "${x}" != "" ]; then
+   x=${x%*.c}
+<<<<<<< HEAD
+   echo "${x}"
+   gcc -g -o ${x} ${x}.c
+else
+   echo "Complie Failed!!\n"
+fi
+
+=======
+   gcc -o ${x} ${x}.c
+else
+   echo "complie faied!"
+   exit
+fi
+>>>>>>> 0441211... add from compile server

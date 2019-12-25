@@ -1,0 +1,33 @@
+#!/bin/bash
+
+if [ "$1" == "" ]; then
+<<<<<<< HEAD
+  read -p "Please give the key words:" ex
+else 
+  grep -rnR --color "$1" *
+  exit
+fi
+if [ "${ex}" != "" ]; then
+  grep -rnR --color "${ex}" *
+else
+  echo "Search failed!"
+=======
+	read -p "Please give the key words:" sm
+else
+	sf=$1
+fi
+if [ "$2" == "" ]; then
+	# grep $1 in the dir and subdir
+	if [ "${sf}" != "" ]; then
+		# 2>/dev/null can prevent printing error messages!
+  		grep -rns --color "${sf}" * 2>/dev/null
+	else 
+  	echo "Search failed!"
+	fi
+else
+	# find the file "$1" which should contain "$2"
+	sm=$2
+	find ./ -type f -name "${sf}" | xargs grep -rn --color "${sm}" 2>/dev/null
+>>>>>>> 0441211... add from compile server
+fi
+
