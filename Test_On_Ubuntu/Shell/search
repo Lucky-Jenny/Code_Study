@@ -2,6 +2,7 @@
 
 if [ "$1" == "" ]; then
 <<<<<<< HEAD
+<<<<<<< HEAD
   read -p "Please give the key words:" ex
 else 
   grep -rnR --color "$1" *
@@ -12,6 +13,8 @@ if [ "${ex}" != "" ]; then
 else
   echo "Search failed!"
 =======
+=======
+>>>>>>> c30ff3c... Modify two scripts after a lot of tests.
 	read -p "Please give the key words:" sm
 else
 	sf=$1
@@ -27,7 +30,11 @@ if [ "$2" == "" ]; then
 else
 	# find the file "$1" which should contain "$2"
 	sm=$2
+<<<<<<< HEAD
 	find ./ -type f -name "${sf}" | xargs grep -rn --color "${sm}" 2>/dev/null
 >>>>>>> 0441211... add from compile server
+=======
+	find ./ -type f -name "${sf}" | xargs grep -n --color "${sm}" 2>/dev/null
+>>>>>>> c30ff3c... Modify two scripts after a lot of tests.
 fi
 
