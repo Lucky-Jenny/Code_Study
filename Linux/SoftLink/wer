@@ -1,0 +1,6 @@
+This is the original file.
+
+#Soft link is the same as Shortcut in Windows.
+#Hard link = cp -p <file> ——>ls -lib
+#inode both point to original file and hard link.
+#If u rm <file> Sl will turn red(no link), Hl has no effect.
