@@ -1,53 +1,28 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-
-=======
->>>>>>> c30ff3c... Modify two scripts after a lot of tests.
 #!/bin/bash
 
-#The file can compile the files in an easy way.
+# The script can compile files of different languages in an easy way.
 
-if [ "$1" == "" ]; then
-  read -p "Please input the filename:" x
-else
-  x=$1
-<<<<<<< HEAD
-=======
-#!/bin/bash
+test "$1" != "" || exit 1
 
-if [ "$1" == "" ]; then
-   read -p "Please input the filename:" x
-else
-   x=$1
->>>>>>> 0441211... add from compile server
-=======
+# C.
+comp_c()
+{
+	x=${1%%.c*}		# '%%' %%O* --> 截取最后"O"的左侧str，删除右侧str
+	echo ${x}		# '%' --> 截取最前"O"的左侧str。
+	gcc -g -o ${x} $1
+}
 
->>>>>>> c30ff3c... Modify two scripts after a lot of tests.
-fi
+# C++.
+comp_c_plus()
+{	
+	x=${1%%.cpp*}
+	echo ${x}
+	g++ $1 -o ${x}
+}
 
-if [ "${x}" != "" ]; then
-   x=${x%*.c}
-<<<<<<< HEAD
-<<<<<<< HEAD
-   echo "${x}"
-   gcc -g -o ${x} ${x}.c
-else
-   echo "Complie Failed!!\n"
-fi
+case ${1##*.} in		# '##' ##*O --> 截取最后"."的右侧str，保留左侧str
+	"c") comp_c $1 ;;
+	"cpp") comp_c_plus $1 ;;
+esac
 
-=======
-   gcc -o ${x} ${x}.c
-else
-   echo "complie faied!"
-   exit
-fi
->>>>>>> 0441211... add from compile server
-=======
-   gcc -o ${x} ${x}.c
-else
-   echo "complie faied!"
-   exit
-fi
-
->>>>>>> c30ff3c... Modify two scripts after a lot of tests.
+exit 1
