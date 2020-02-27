@@ -5,7 +5,9 @@
 
 typedef unsigned char uint8;
 typedef unsigned int uint32;
-//First time: encrypt to another code, Second time: recover the code.
+
+//First time: encrypt to another code, Second time: recovery the code.
+
 static void calc_magic(uint8 *data, uint32 n)
 {
 	uint32 *t = (uint32 *)data; //From 32 to 8.
