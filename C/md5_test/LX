@@ -1,0 +1,8 @@
+---
+md5 checksum is a pretty great technology to show whether a file has been changed.
+It will encrypt the all related datum from the file, including modifying-date, values, size and so on.
+In this way, companies will use md5 to check their files.
+---
+This file is for md5-check.
+If u change any one word of it, the md5 value will change.
+---
