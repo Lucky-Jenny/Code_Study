@@ -1,21 +1,28 @@
 #!/bin/bash
 
-if [ "x$1" == "x" ]; then
-	read -p "Please give the key words:" sf
-else
-	sf=$1
-fi
+cmd="${0##*/}"
+
+usage()
+{
+	cat <<-EOF >&2
+	Usage: $cmd <keyword> [<file>]
+	-With <file>, the cmd means:
+	   find <file> which contains <keyword> in dir.
+	-With no <file>, the cmd means:
+	   grep <keyword> in dir.
+	-Keyword and file can be regular expression.
+	EOF
+}
+
+test -z $1 && usage && exit 1
+key=$1
+
 if [ "x$2" == "x" ]; then
-	# grep $1 in the dir and subdir
-	if [ "${sf}" != "" ]; then
-		# 2>/dev/null can prevent printing error messages!
-  		grep -rns --color "${sf}" * 2>/dev/null
-	else 
-  	echo "Search failed!"
-	fi
+	# 2>/dev/null can prevent printing error messages!
+  	grep -rns --color "$key" * 2>/dev/null
 else
 	# find the file "$1" which should contain "$2"
-	sm=$2
-	find ./ -type f -name "${sf}" | xargs grep -n --color "${sm}" 2>/dev/null
+	fname=$2
+	find ./ -type f -name "$fname" | xargs grep -n --color "$key" 2>/dev/null
 fi
 
