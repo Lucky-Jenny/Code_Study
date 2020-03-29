@@ -1,0 +1,9 @@
+*******************************************************************
+* This is a description about "Tcpdump".                          *
+* In case that u are required to use tcpdump to capture packages. *
+*******************************************************************
+
+capture while writing to a file:
+	tcmdump -i athX -w a.pcap 
+
+
