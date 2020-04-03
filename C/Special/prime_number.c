@@ -31,7 +31,6 @@ void test_print(char str[], int num)
 int Judge_Prime(int x[])
 {
 	int i = 0, m = -1, k = 0, temp = 0, quo = 0;
-	char cmd[32];
 
 	if(x[END] == 0 || x[END] == 2 || x[END] == 4	\
 		|| x[END] == 5 || x[END] == 6 || x[END] == 8)
@@ -73,7 +72,6 @@ void Rand_Large_Num(int num[])
 
 void Print_and_Echo_to_File(int x[])
 {
-	FILE *f;
 	int i = 0;
 	for(; i < LEN; i++){		// print to console.
 		printf("%d", x[i]);
