@@ -21,8 +21,7 @@ int main()
 	int try = 0;
 
 	sockfd=socket(AF_INET,SOCK_STREAM,0);	/*建立socket*/
-	if(sockfd==-1)
-	{
+	if(sockfd==-1){
 		printf("socket failed:%d\n",errno);
 	}
     //参数意义见上面服务器端 
@@ -34,9 +33,10 @@ int main()
 	printf("Client: send conection socket and receive message from server.\n-------\n");
 	while(try++ < 5){
 		if(connect(sockfd,(struct sockaddr*)&dest_addr,sizeof(struct sockaddr))==-1){
-		//连接方法，传入句柄，目标地址和大小 
-		printf("connect failed:%d\n",errno);
-		} else{
+			//连接方法，传入句柄，目标地址和大小 
+			printf("connect failed:%d\n",errno);
+		}
+		else{
 			printf("Connect success!\n");
 			while(1){
 				recv(sockfd,buf,MAX_DATA,0);

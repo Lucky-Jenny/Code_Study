@@ -21,8 +21,7 @@ int main()
 	char str[1024];
 
 	sockfd=socket(AF_INET,SOCK_STREAM,0);	//建立socket 
-	if(sockfd==-1)
-	{
+	if(sockfd==-1){
 		printf("socket failed:%d",errno);
 		return -1;
 	}
@@ -30,31 +29,31 @@ int main()
 	my_addr.sin_port=htons(PORT);		/*端口号*/
 	my_addr.sin_addr.s_addr=htonl(INADDR_ANY);		/*IP，括号内容表示本机IP*/
 	bzero(&(my_addr.sin_zero),8);		/*将其他属性置0*/
-	if(bind(sockfd,(struct sockaddr*)&my_addr,sizeof(struct sockaddr))<0)		//绑定地址结构体和socket
-	{
+	if(bind(sockfd,(struct sockaddr*)&my_addr,sizeof(struct sockaddr))<0){		//绑定地址结构体和socket
 		printf("bind error");
 		return -1;
 	}
 	listen(sockfd,BACKLOG);//开启监听 ，第二个参数是最大监听数 
 	printf("Server: Wait coneection and send message\n---------\n");
-		sin_size=sizeof(struct sockaddr_in);
-		new_fd=accept(sockfd,(struct sockaddr*)&their_addr,&sin_size);
-		//在这里阻塞知道接收到消息，参数分别是socket句柄，接收到的地址信息以及大小 
-		if(new_fd==-1)
-		{ printf("receive failed");}
-		else{
-			while(1){
-				printf("connection success!\nInput str u want to send:");
-				scanf("%[^\n]", str);
-				printf("get string:%s\n", str);
-				send(new_fd, str, MAX_DATA, 0);
-				//发送内容，参数分别是连接句柄,内容,大小,其他信息(设为0即可)
-				memset(str, 0, MAX_DATA); 
-				getchar();		
-				//scanf在读取到非法字符时会放入缓存区，造成循环后不再从用户这里读取，因此，用getchar()去接收这个非法字符
-				sleep(2);
-			}
+	sin_size=sizeof(struct sockaddr_in);
+	new_fd=accept(sockfd,(struct sockaddr*)&their_addr,&sin_size);
+	//在这里阻塞知道接收到消息，参数分别是socket句柄，接收到的地址信息以及大小 
+	if(new_fd==-1){
+		printf("receive failed");
+	}
+	else{
+		while(1){
+			printf("connection success!\nInput str u want to send:");
+			scanf("%[^\n]", str);
+			printf("get string:%s\n", str);
+			send(new_fd, str, MAX_DATA, 0);
+			//发送内容，参数分别是连接句柄,内容,大小,其他信息(设为0即可)
+			memset(str, 0, MAX_DATA); 
+			getchar();		
+			//scanf在读取到非法字符时会放入缓存区，造成循环后不再从用户这里读取，因此，用getchar()去接收这个非法字符
+			sleep(2);
 		}
+	}
 	return 0;
 }
 
