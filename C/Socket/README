@@ -1,0 +1,9 @@
+This Socket Program is based on TCP socket in C language.
+************************
+2020-02-15
+Add basic Socket codes, which is just a simple one for study.
+************************
+2020-05-04
+Based on last codes, encrypt the text sent between Socket.
+
+
