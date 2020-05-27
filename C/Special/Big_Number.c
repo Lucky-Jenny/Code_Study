@@ -5,14 +5,14 @@
 #include <math.h>
 #include <ctype.h>
 
-#define MAX_LEN 1024
+#define MAX_LEN 102400
 #define TEST_BN 0
 
 typedef struct  bigint{
 	char name[32];
-	char num[MAX_LEN];		// save in 'char', show in 'int'
-	int sign;				// symbol: 1-->positive; -1-->negative
-	int digit;				// length of this BN
+	char num[MAX_LEN];			// save in 'char', show in 'int'
+	int sign;					// symbol: 1-->positive; -1-->negative
+	int digit;					// length of this BN
 }*pBIGINT;
 
 enum METHOD{
@@ -21,11 +21,12 @@ enum METHOD{
 	MUL,		// Multiplication
 	DIV,		// Division
 	FAC,		// Factorial
-	SQRT,		// Square Root
+	POW,		// Power
 };
 
 /*
- function: printf all values of struct bigint
+ Func: Print all values of struct bigint
+ Note: Color the name of BN.
 */
 void BN_print(pBIGINT bn)
 {
@@ -40,13 +41,12 @@ void BN_print(pBIGINT bn)
 }
 
 /*
- function: compare n1 and n2
- return: n1 = n2 ---> 0
+ Func: Compare n1 with n2
+ return:  n1 = n2 ---> 0
  both >0, n1 > n2 ---> 2 (both < 0, |n1| > |n2| ---> -2)
  both >0, n1 < n2 ---> 1 (both < 0, |n1| < |n2| ---> -1)
- n1>0 n2<0, |n1| > |n2| --->  6		|n1| < |n2| ---> 3
- n1<0 n2>0, |n1| > |n2| ---> -6		|n1| < |n2| ---> -3
-
+ n1>0 n2<0, |n1| > |n2| --->  6	    |n1| < |n2| --->  3
+ n1<0 n2>0, |n1| > |n2| ---> -6	    |n1| < |n2| ---> -3
 */
 int BigIntCompare(pBIGINT n1, pBIGINT n2)
 {
@@ -78,10 +78,37 @@ int BigIntCompare(pBIGINT n1, pBIGINT n2)
 }
 
 /*
- func: joint bn2 values(p1, p2) tothe tail of bn1
+ Func: BNx - 1
+ Note: 1000 ---> 999
+*/
+void BN_degrese(pBIGINT BNx)
+{
+	int i = 1;
+
+	if(BNx->num[0]){
+		BNx->num[0]--;
+		return;
+	}else
+		BNx->num[0] = 9;
+
+	for(i = 1; i < BNx->digit; i++){
+		if(BNx->num[i] == 0)
+			BNx->num[i] = 9;
+		else{
+			BNx->num[i]--;
+			break;
+		}
+	}
+	/* Check whether head bit is 0 */
+	if(BNx->num[BNx->digit-1] == 0)
+		BNx->digit--;
+}
+
+/*
+ Func: joint bn2 values(p1, p2) tothe tail of bn1
 		[bn1: 4,6,2,3	bn2: 8,5,9,0,1,4,2,2]
 		BNjoint(bn1, bn2, 3, 6) ------> bn1: 4,6,2,3,0,1,4,2
- Note: Not include name and sign
+ Note: Exclude name and sign
 */
 int BNjoint(pBIGINT bn1, pBIGINT bn2, int p1, int p2)
 {
@@ -95,27 +122,27 @@ int BNjoint(pBIGINT bn1, pBIGINT bn2, int p1, int p2)
 }
 
 /*
- func: Set bn to 0
- Note: sign set to 1
+ Func: Set bn to 0
+ Note: sign = 1, digit = 1
 */
 void BN_zero(pBIGINT bn)
 {
 	int i = 0;
 
 	bn->sign = 1;
-	bn->digit = 0;
+	bn->digit = 1;
 	for(;i < MAX_LEN; i++){
 		bn->num[i] = 0;
 	}
 }
 
 /*
- func: copy bn2 values[p1, p2] to bn1
+ Func: Copy bn2 values[p1, p2] to bn1
 		[bn1: 4,6,2,3	bn2: 8,5,9,0,1,4,2,2]
 		BNcpy(bn1, bn2, 3, 6) ------> bn1: 0,1,4,2
- Note: Difference from BNjoint(): 
-		1. Joint from the tail of bn1
-		2. Copy from the head of bn1
+ Note: Difference from BNjoint
+		1. Joint---> start from the tail of bn1
+		2. Copy ---> start from the head of bn1
 */
 void BNcpy(pBIGINT bn1, pBIGINT bn2, int p1, int p2)
 {
@@ -125,7 +152,7 @@ void BNcpy(pBIGINT bn1, pBIGINT bn2, int p1, int p2)
 
 
 /*
- function: check the str is valid for Big Number
+ Func: Check whether the string is valid for Big Number
  return: valid ---> 1
 		invalid---> 0
 */
@@ -150,7 +177,7 @@ int Check_Valid(char str[])
 }
 
 /*
- function: Big Number in '%c' ---> Big Number in '%d'.
+ Func: String in '%c' ---> Big Number in '%d'.
  Note:	BN in Array should be reversed !!! 
 		It is convenient for caculation.
 */
@@ -182,7 +209,12 @@ void Str_To_BigNum(char str[], pBIGINT bn)
 		bkup[i++] = *p - '0';
 		p++;
 	}
-	bn->digit = i;
+
+	if(i)
+		bn->digit = i;
+	else						// when BN = 0, digit = 1
+		bn->digit = 1;
+	
 	/* reverse the array */
 	for(; j < bn->digit; j++){
 		bn->num[j] = bkup[--i];
@@ -198,7 +230,7 @@ https://blog.csdn.net/qq_36894136/article/details/79074728
 /*------------------------------------------------------------------*/
 
 /*
- func: result = BNa + BNb
+ Func: result = BNa + BNb
  Note: carry influence digit
 */
 void BigIntAdd(pBIGINT BNa, pBIGINT BNb, pBIGINT BNc)
@@ -230,7 +262,7 @@ void BigIntAdd(pBIGINT BNa, pBIGINT BNb, pBIGINT BNc)
 } 
 
 /*
- func: result = BNa - BNb
+ Func: result = BNa - BNb
  Note: borrow influence digit
 */
 void BigIntSub(pBIGINT BNa, pBIGINT BNb, pBIGINT BNc)
@@ -276,7 +308,7 @@ void BigIntSub(pBIGINT BNa, pBIGINT BNb, pBIGINT BNc)
 }
 
 /*
- func: result = BNa * BNb
+ Func: result = BNa * BNb
  Note: set result to 0 brefore multiply
 */
 void BigIntMul(pBIGINT BNa, pBIGINT BNb, pBIGINT BNc)
@@ -359,6 +391,57 @@ void BigIntDiv(pBIGINT BNa, pBIGINT BNb, pBIGINT BNc, pBIGINT residue)
 }
 
 /*
+ Func: BNc = BNa!
+ Note:  No need to calculate degrese time.
+		Just compare tmp with '1'.
+*/
+void BigIntFac(pBIGINT BNa, pBIGINT BNc)
+{
+	int i = 0, j = 0;
+	struct bigint Temp = {"temp", {0}, 0, 0}, Unit = {"unit", {0}, 0, 0};
+	pBIGINT tmp = &Temp, unit = &Unit;
+
+	BNcpy(BNc, BNa, 0, BNa->digit-1);
+	BNcpy(tmp, BNa, 0, BNa->digit-1);
+
+	Str_To_BigNum("1", unit);
+	while(BigIntCompare(tmp, unit) != 0){
+		BN_degrese(tmp);
+		BigIntMul(BNc, tmp, BNc);
+	}
+}
+
+/*
+ Func: BNc = BNa^(BNb)
+ Note: Attention to BNc->sign
+*/
+void BigIntPower(pBIGINT BNa, pBIGINT BNb, pBIGINT BNc)
+{
+	struct bigint Temp = {"temp", {0}, 0, 0}, Unit = {"unit", {0}, 0, 0}, Judge = {"judge", {0}, 0, 0};
+	pBIGINT tmp = &Temp, unit = &Unit, judge = &Judge;
+
+	BNcpy(BNc, BNa, 0, BNa->digit-1);
+
+	Str_To_BigNum("1", unit);
+	while(BigIntCompare(BNb, unit) != 0){
+		BN_degrese(BNb);
+		BigIntMul(BNc, BNa, BNc);
+	}
+
+	/* Judge BNc sign by (BNb % 2) ?= 0 */
+	Str_To_BigNum("2", unit);
+	BigIntDiv(BNb, unit, tmp, judge);
+#if TEST_BN
+	printf("Judge BN_Power Sign: BNb % 2 ?=0\n");
+	BN_print(judge);
+#endif
+	if(judge->num[0] == 0)
+		BNc->sign = 1;
+	else
+		BNc->sign = -1;
+}
+
+/*
  Func: calculate according to METHOD and sign.
  Note:  1. recognize negative calculation in '+' and '-'.
 		2. deal with uncertain parameters.
@@ -421,10 +504,25 @@ void Calculate_Big_Numer(enum METHOD way, ...)
 			BN_print(BNd);
 			break;
 		case FAC:												// Factorial
-
+			if(BNa->sign == -1){
+				printf("Factorial: Number can't be negative!!\n");
+				return;
+			}
+			printf("\033[40;36mFactorial: bn1! = bn3\033[0m\n");
+			strcpy(BNb->name, "BN_factorial");
+			BigIntFac(BNa, BNb);
+			BN_print(BNb);
 			break;
-		case SQRT:												// Square Root
-
+		case POW:												// Power
+			if(BNb->sign == -1){
+				printf("Power: The power number can't be negative!!\n");
+				return;
+			}
+			BNc = va_arg(args, pBIGINT);
+			printf("\033[40;36mPower: bn1^(bn2) = bn3\033[0m\n");
+			strcpy(BNc->name, "BN_Power");
+			BigIntPower(BNa, BNb, BNc);
+			BN_print(BNc);
 			break;
 		default:
 			break;
@@ -440,10 +538,10 @@ int main()
 	pBIGINT BNa = &BigNumA, BNb = &BigNumB, BNc = &BigNumC, BNd = &BigNumD;
 
 	// Method to get BigNum
-	strcpy(str, "00019435347589347593453");
+	strcpy(str, "0001321");
 	Str_To_BigNum(str, BNa);
 	BN_print(BNa);
-	strcpy(str, "000394356123");
+	strcpy(str, "00053");
 	Str_To_BigNum(str, BNb);
 	BN_print(BNb);
 
@@ -451,6 +549,8 @@ int main()
 	Calculate_Big_Numer(SUB, BNa, BNb, BNc);
 	Calculate_Big_Numer(MUL, BNa, BNb, BNc);
 	Calculate_Big_Numer(DIV, BNa, BNb, BNc, BNd);
+	Calculate_Big_Numer(FAC, BNa, BNc);
+	Calculate_Big_Numer(POW, BNa, BNb, BNc);
 
 }
 
