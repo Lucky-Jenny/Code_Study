@@ -5,12 +5,12 @@
 #include <math.h>
 #include <ctype.h>
 
-#define MAX_LEN 102400
+#define BN_LEN 10240
 #define TEST_BN 0
 
 typedef struct  bigint{
 	char name[32];
-	char num[MAX_LEN];			// save in 'char', show in 'int'
+	char num[BN_LEN];			// save in 'char', show in 'int'
 	int sign;					// symbol: 1-->positive; -1-->negative
 	int digit;					// length of this BN
 }*pBIGINT;
@@ -19,7 +19,9 @@ enum METHOD{
 	ADD,		// Addition
 	SUB,		// Subtraction
 	MUL,		// Multiplication
-	DIV,		// Division
+	DIV,		// Division -----> Quotient + Module
+	QUO,		// Quotient
+	MOD,		// Modulus
 	FAC,		// Factorial
 	POW,		// Power
 };
@@ -131,9 +133,27 @@ void BN_zero(pBIGINT bn)
 
 	bn->sign = 1;
 	bn->digit = 1;
-	for(;i < MAX_LEN; i++){
+	for(;i < BN_LEN; i++){
 		bn->num[i] = 0;
 	}
+}
+
+/*
+ Func: Judge whether BN is zero.
+ Note:  BN == 0 ---> 1
+		BN != 0 ---> 0
+	[Correct digit=1 when BN=0]
+*/
+int Is_BN_zero(pBIGINT bn)
+{
+	int i = 0;
+
+	for(; i < bn->digit; i++){
+		if(bn->num[i] != 0)
+			return 0;
+	}
+	bn->digit = 1;
+	return 1;
 }
 
 /*
@@ -147,6 +167,7 @@ void BN_zero(pBIGINT bn)
 void BNcpy(pBIGINT bn1, pBIGINT bn2, int p1, int p2)
 {
 	BN_zero(bn1);
+	bn1->digit = 0;					// Fix: correct the right position of joint.
 	BNjoint(bn1, bn2, p1, p2);
 }
 
@@ -163,28 +184,25 @@ int Check_Valid(char str[])
 	if(*ptr == '-' || *ptr == '+')		// check the sign
 		ptr++;
 	while(*ptr != '\0'){
-#if TEST_BN
-		printf("%c ", *ptr);
-#endif
 		if(!isdigit((int)*ptr))
 			return 0;
 		ptr++;
 	}
-#if TEST_BN
-	printf("\n");
-#endif
 	return 1;
 }
 
 /*
  Func: String in '%c' ---> Big Number in '%d'.
- Note:	BN in Array should be reversed !!! 
-		It is convenient for caculation.
+ Note:
+	1."000234"-->234; "-0546"-->-546
+	2.BN in Array should be reversed !!! 
+	3.XXX Cannot define function of 'pBIGINT'!!! XXX
+	  Because pointer will change original address.
 */
 void Str_To_BigNum(char str[], pBIGINT bn)
 {
 	int i = 0, j = 0;
-	char bkup[MAX_LEN] = {0};
+	char bkup[BN_LEN] = {0};
 	char *p;
 
 	if(!Check_Valid(str)){
@@ -221,6 +239,54 @@ void Str_To_BigNum(char str[], pBIGINT bn)
 	}
 }
 
+/*
+ Func: Put small integer into Big Number
+ Note:	Only support for little number !!! 
+		If too big, still require Str_To_BigNum()
+*/
+void Int_To_BigNum(int x, pBIGINT bn)
+{
+	char str[32];
+
+	sprintf(str, "%d", x);
+	Str_To_BigNum(str, bn);
+}
+
+/*
+ Func: Turn BN to char*
+ Note: btter use strcpy() to get, because bn_str[] will free when func end.
+*/
+char *BigNum_To_Str(pBIGINT bn)
+{
+	int i = 0, j = 0;
+	char tmp[8], bn_str[BN_LEN] = {0};
+	char *p = bn_str;
+
+	for(i = bn->digit-1; i >= 0; i--){
+		sprintf(tmp, "%d", bn->num[i]);
+		strcat(bn_str, tmp);
+	}
+	return p;
+}
+
+/*
+ Func: Turn BN to int
+ Note:  If put 'int' into param, it should be '*int', Or invalid!!
+*/
+int BigNum_To_Int(pBIGINT bn)
+{
+	int i = 0, bit = 1, tmp = 0, max = 8;
+
+	if(bn->digit > max){
+		printf("Can't turn to int! ---> Length of BN > %d\n", max);
+		return 0;
+	}
+	for(; i < bn->digit; i++){
+		tmp += bit * bn->num[i];
+		bit *= 10;
+	}
+	return tmp;
+}
 
 /*------------------------------------------------------------------*/
 /*
@@ -232,6 +298,7 @@ https://blog.csdn.net/qq_36894136/article/details/79074728
 /*
  Func: result = BNa + BNb
  Note: carry influence digit
+	[A] = [A] + [B] 
 */
 void BigIntAdd(pBIGINT BNa, pBIGINT BNb, pBIGINT BNc)
 {
@@ -264,6 +331,7 @@ void BigIntAdd(pBIGINT BNa, pBIGINT BNb, pBIGINT BNc)
 /*
  Func: result = BNa - BNb
  Note: borrow influence digit
+		[A] = [A] - [B]
 */
 void BigIntSub(pBIGINT BNa, pBIGINT BNb, pBIGINT BNc)
 {
@@ -331,6 +399,7 @@ void BigIntMul(pBIGINT BNa, pBIGINT BNb, pBIGINT BNc)
 			carry += result->num[pos]/10;		// get carry(not always 1)
 			result->num[pos] %= 10;
 		}
+
 		if(carry > 0){
 			result->num[i+j] = carry;
 			result->digit = i+j+1;
@@ -339,36 +408,49 @@ void BigIntMul(pBIGINT BNa, pBIGINT BNb, pBIGINT BNc)
 	} 
 	result->sign = BNa->sign * BNb->sign;			// sgin
 
+	if(Is_BN_zero(result))
+		BN_zero(result);
+
 	BNcpy(BNc, result, 0, result->digit-1);
 }
 
 /*
  Func: BNa / BNb = result ...... residue
  Note: 
+	1) Require BN_joint() to link residue to one bit from BNb
+	2) If residue=0, no joint and go on.
+	3) For a clear view in test, require BN_To_Str() to get BN with on '\n'
 */
 void BigIntDiv(pBIGINT BNa, pBIGINT BNb, pBIGINT BNc, pBIGINT residue)
 {
-	int i = 0, j = 0, k = 0, m = 0, cmp;	// k--> value, m-->bit-num. Both for quotient
-	char t;
+	int i, j, m, a_sign, b_sign;	// m-->bit-num. Both for quotient
 	char num[8] = {0};
 	struct bigint Result = {"result", {0}, 0, 0}, Temp = {"temp", {0}, 0, 0}, KIT = {"k", {0}, 0, 0};
 	pBIGINT result = &Result, tmp = &Temp, K = &KIT;
 
 	result->sign = BNa->sign * BNb->sign;		//symbol of quotient
+	result->digit = BNa->digit;
 
-	m = BNa->digit - BNb->digit + 1;
-	i = m;
-	result->digit = m;
+	/* Avoid error when BNa/BNb is negative */
+	a_sign = BNa->sign;
+	b_sign = BNb->sign;
+	BNa->sign = BNb->sign = 1;
+
+	i = m = BNa->digit - BNb->digit;
 	BNcpy(tmp, BNa, i, BNa->digit-1);		// Length of minuend.
 	while(i-- >= 0){
 		BN_zero(K);
-		BN_zero(residue);
 		for(j = 0; j < 10; j++){
-			sprintf(num, "%d", j);
-			Str_To_BigNum(num, K);
+			Int_To_BigNum(j, K);
 			BigIntMul(K, BNb, K);
 			BigIntSub(tmp, K, residue);
-
+#if TEST_BN
+	//printf("", BigNum_To_Str(tmp), BigNum_To_Str(K), BigNum_To_Str(residue));
+	/* Cannot print in one line Because it will call parms at the same time. */
+			printf("[%s]-", BigNum_To_Str(tmp));
+			printf("[%s]=", BigNum_To_Str(K));
+			printf("[%s]\n", BigNum_To_Str(residue));
+#endif
 			if(BigIntCompare(residue, BNb) == 1){
 				result->num[i+1] = j;
 #if TEST_BN
@@ -378,15 +460,23 @@ void BigIntDiv(pBIGINT BNa, pBIGINT BNb, pBIGINT BNc, pBIGINT residue)
 			}
 		}
 		BNcpy(tmp, BNa, i, i);
-		BNjoint(tmp, residue, 0, residue->digit-1);
+		if(!Is_BN_zero(residue))
+			BNjoint(tmp, residue, 0, residue->digit-1);
 	}
+#if TEST_BN
+	strcpy(result->name, "BN_quotient_tmp");
+	BN_print(result);
+#endif
+	/* Recovery sign */
+	BNa->sign = a_sign;
+	BNb->sign = b_sign;
 
-	/* check whether the head of result=0 */
-	for(i = m-1; i > 0; i--){
-		if(result->num[i] == 0)
-			result->digit--;
+	/* check and rm the head bits which result=0 */
+	for(i = result->digit-1; i >= 0; i--){
+		if(result->num[i] != 0)
+			break;
+		result->digit--;
 	}
-
 	BNcpy(BNc, result, 0, result->digit-1);
 }
 
@@ -397,14 +487,13 @@ void BigIntDiv(pBIGINT BNa, pBIGINT BNb, pBIGINT BNc, pBIGINT residue)
 */
 void BigIntFac(pBIGINT BNa, pBIGINT BNc)
 {
-	int i = 0, j = 0;
 	struct bigint Temp = {"temp", {0}, 0, 0}, Unit = {"unit", {0}, 0, 0};
 	pBIGINT tmp = &Temp, unit = &Unit;
 
 	BNcpy(BNc, BNa, 0, BNa->digit-1);
 	BNcpy(tmp, BNa, 0, BNa->digit-1);
 
-	Str_To_BigNum("1", unit);
+	Int_To_BigNum(1, unit);
 	while(BigIntCompare(tmp, unit) != 0){
 		BN_degrese(tmp);
 		BigIntMul(BNc, tmp, BNc);
@@ -422,17 +511,17 @@ void BigIntPower(pBIGINT BNa, pBIGINT BNb, pBIGINT BNc)
 
 	BNcpy(BNc, BNa, 0, BNa->digit-1);
 
-	Str_To_BigNum("1", unit);
+	Int_To_BigNum(1, unit);
 	while(BigIntCompare(BNb, unit) != 0){
 		BN_degrese(BNb);
 		BigIntMul(BNc, BNa, BNc);
 	}
 
 	/* Judge BNc sign by (BNb % 2) ?= 0 */
-	Str_To_BigNum("2", unit);
+	Int_To_BigNum(2, unit);
 	BigIntDiv(BNb, unit, tmp, judge);
 #if TEST_BN
-	printf("Judge BN_Power Sign: BNb % 2 ?=0\n");
+	printf("Judge BN_Power Sign: BNb %% 2 ?=0\n");
 	BN_print(judge);
 #endif
 	if(judge->num[0] == 0)
@@ -443,17 +532,21 @@ void BigIntPower(pBIGINT BNa, pBIGINT BNb, pBIGINT BNc)
 
 /*
  Func: calculate according to METHOD and sign.
- Note:  1. recognize negative calculation in '+' and '-'.
-		2. deal with uncertain parameters.
+ Note:
+	1. recognize '+' and '-', chose the right calculation.
+	2. use 'va_list' to deal with uncertain parameters.
+	3. provide 'QUO' and 'MOD' to separate 'DIV'.
 */
 void Calculate_Big_Numer(enum METHOD way, ...)
 {
 	int comp = 0;
-	va_list args;
 	pBIGINT BNa, BNb, BNc, BNd;
+	struct bigint Back = {"Back_up", {0}, 0};
+	va_list args;
+	
 
 	/* A good sample of va_list in uncertain parameters */
-	va_start(args, way);									// start
+	va_start(args, way);			// start
 	BNa = va_arg(args, pBIGINT);
 	BNb = va_arg(args, pBIGINT);
 
@@ -463,47 +556,72 @@ void Calculate_Big_Numer(enum METHOD way, ...)
 #endif
 
 	switch(way){
-		case ADD:												// Addition
+		case ADD:										// Addition
 			BNc = va_arg(args, pBIGINT);
 			printf("\033[40;36mAdd: bn1 + bn2 = bn3\033[0m\n");
-			if(abs(comp) < 3)					// the same sign
+			if(abs(comp) < 3)				// the same sign
 				BigIntAdd(BNa, BNb, BNc);
 			else
 				BigIntSub(BNa, BNb, BNc);
-			strcpy(BNc->name, "BN_add");
+			strcpy(BNc->name, "BN_Addition");
 			BN_print(BNc);
 			break;
-		case SUB:												// Subtraction
+		case SUB:										// Subtraction
 			BNc = va_arg(args, pBIGINT);
 			printf("\033[40;36mSub: bn1 - bn2 = bn3\033[0m\n");
-			if(abs(comp) < 3)					// the same sign
+			if(abs(comp) < 3)				// the same sign
 				BigIntSub(BNa, BNb, BNc);
 			else
 				BigIntAdd(BNa, BNb, BNc);
-			strcpy(BNc->name, "BN_subtract");
+			strcpy(BNc->name, "BN_Subtract");
 			BN_print(BNc);
 			break;
-		case MUL:												// Multiplication
+		case MUL:										// Multiplication
 			BNc = va_arg(args, pBIGINT);
 			printf("\033[40;36mMultiply: bn1 * bn2 = bn3\033[0m\n");
 			BigIntMul(BNa, BNb, BNc);
-			strcpy(BNc->name, "BN_multiply");
+			strcpy(BNc->name, "BN_Multiply");
 			BN_print(BNc);
 			break;
-		case DIV:												// Division
+		case DIV:										// Division
 			BNc = va_arg(args, pBIGINT);
 			BNd = va_arg(args, pBIGINT);
 			printf("\033[40;36mDivise: bn1 / bn2 = bn3 ... bn4\033[0m\n");
-			if(BNb->digit == 0){
+			if(Is_BN_zero(BNb)){
 				printf("Divisor cannot be 0!!!\n");
 				break;
 			}
 			BigIntDiv(BNa, BNb, BNc, BNd);
-			strcpy(BNc->name, "BN_divise");
+			strcpy(BNc->name, "BN_quotient");
+			strcpy(BNd->name, "BN_residue");
 			BN_print(BNc);
 			BN_print(BNd);
 			break;
-		case FAC:												// Factorial
+		case QUO:										// Quotient
+			BNc = va_arg(args, pBIGINT);
+			BNd = &Back;
+			printf("\033[40;36mQuotient: bn1 / bn2 = bn3\033[0m\n");
+			if(Is_BN_zero(BNb)){
+				printf("Divisor cannot be 0!!!\n");
+				break;
+			}
+			BigIntDiv(BNa, BNb, BNc, BNd);
+			strcpy(BNc->name, "BN_Quotient");
+			BN_print(BNc);
+			break;
+		case MOD:										// Modulus
+			BNc = va_arg(args, pBIGINT);
+			BNd = &Back;
+			printf("\033[40;36mModulus: bn1 %% bn2 = bn3\033[0m\n");
+			if(Is_BN_zero(BNb)){
+				printf("Divisor cannot be 0!!!\n");
+				break;
+			}
+			BigIntDiv(BNa, BNb, BNd, BNc);
+			strcpy(BNc->name, "BN_Modulus");
+			BN_print(BNc);
+			break;
+		case FAC:										// Factorial
 			if(BNa->sign == -1){
 				printf("Factorial: Number can't be negative!!\n");
 				return;
@@ -513,7 +631,7 @@ void Calculate_Big_Numer(enum METHOD way, ...)
 			BigIntFac(BNa, BNb);
 			BN_print(BNb);
 			break;
-		case POW:												// Power
+		case POW:										// Power
 			if(BNb->sign == -1){
 				printf("Power: The power number can't be negative!!\n");
 				return;
@@ -527,30 +645,32 @@ void Calculate_Big_Numer(enum METHOD way, ...)
 		default:
 			break;
 	}
-	va_end(args);											// end
+	va_end(args);					// end
 }
 
 int main()
 {
 	int i = 0;
-	char str[MAX_LEN] = {0};
-	struct bigint BigNumA = {"BN_A", {0}, 0, 0}, BigNumB = {"BN_B", {0}, 0, 0}, BigNumC = {"BN_result", {0}, 0, 0}, BigNumD = {"BN_residue", {0}, 0, 0};
+	char str[BN_LEN] = {0};
+	struct bigint BigNumA = {"BN_A", {0}, 0, 0}, BigNumB = {"BN_B", {0}, 0, 0}, BigNumC = {"BN_C", {0}, 0, 0}, BigNumD = {"BN_D", {0}, 0, 0};
 	pBIGINT BNa = &BigNumA, BNb = &BigNumB, BNc = &BigNumC, BNd = &BigNumD;
 
-	// Method to get BigNum
-	strcpy(str, "0001321");
-	Str_To_BigNum(str, BNa);
+	strcpy(str, "0004922567634564");
+	Str_To_BigNum(str, BNa);		// for Huge Number
 	BN_print(BNa);
-	strcpy(str, "00053");
-	Str_To_BigNum(str, BNb);
+
+	Int_To_BigNum(-1234, BNb);		// for Small Number
 	BN_print(BNb);
 
-	Calculate_Big_Numer(ADD, BNa, BNb, BNc);
-	Calculate_Big_Numer(SUB, BNa, BNb, BNc);
-	Calculate_Big_Numer(MUL, BNa, BNb, BNc);
-	Calculate_Big_Numer(DIV, BNa, BNb, BNc, BNd);
-	Calculate_Big_Numer(FAC, BNa, BNc);
-	Calculate_Big_Numer(POW, BNa, BNb, BNc);
+	//Calculate_Big_Numer(ADD, BNa, BNb, BNc);
+	//Calculate_Big_Numer(SUB, BNa, BNb, BNc);
+	//Calculate_Big_Numer(MUL, BNa, BNb, BNc);
+	//Calculate_Big_Numer(DIV, BNa, BNb, BNc, BNd);
+	Calculate_Big_Numer(QUO, BNa, BNb, BNc);
+	Calculate_Big_Numer(MOD, BNa, BNb, BNc);
+	//Calculate_Big_Numer(FAC, BNa, BNc);
+	//Calculate_Big_Numer(POW, BNa, BNb, BNc);
+
 
 }
 
