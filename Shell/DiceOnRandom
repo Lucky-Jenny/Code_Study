@@ -1,54 +1,40 @@
-
 #!/bin/bash
 
 #This shell will count the probability of dice side with RANDOM.
 
-pips=6
-maxthrow=10
-throw=1
+Throw_Times=907
 
-one=0
-two=0
-three=0
-four=0
-five=0
-six=0
+Freq=(0 0 0 3 0 0)		# define the frequency array of 1~6.
 
 print_result()
 {
-  echo -e "The result is: \n"
-  echo "one=$one "
-  echo "two=$two "
-  echo "three=$three "
-  echo "four=$four "
-  echo "five=$five "
-  echo -e "six=$six \n"
-
+	for var in {1..6}	# {a..b} both a & b should be constant.
+	do
+	tmp=${Freq[$((var-1))]}
+	# A great example of xx% showing in shell !!!
+	prob=`awk 'BEGIN{printf "%.1f%%", ('$tmp'/'$Throw_Times')*100}'`
+	echo "${var}: $tmp ----> $prob"
+	done
 }
 
 update_count()
 {
-  case "$1" in
-	0) let "one += 1" ;;
-	1) let "two += 1" ;;
-	2) let "three += 1" ;;
-	3) let "four += 1" ;;
-	4) let "five += 1" ;;
-	5) let "six += 1" ;;
-  esac
+	lct=$(($1 - 1))
+	((Freq[$lct]+=1))		# important format in calculation!!!
 }
-echo
 
-while [ "$throw" -lt "$maxthrow" ]
-do
- #When u launch this shell, $RANDOM will work.
- #When u denbug this shell, it will ignore the value of $RANDOM
-  r=$(($RANDOM%6))
-  update_count $r
-  let "throw += 1"
-done
+throw_dice()
+{
+	while [ "$((throw++))" -lt "$Throw_Times" ]		# another loop method.
+	do
+	#When u launch this shell, $RANDOM will work.
+	#When u denbug this shell, it will ignore the value of $RANDOM
+	rst=$(($RANDOM%6 + 1))
+	update_count $rst
+	done
+}
 
-print_result
+throw_dice && print_result
 
 exit 0
 
