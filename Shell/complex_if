@@ -1,0 +1,12 @@
+#!/bin/bash
+
+read x
+# judge by if [ ... ]
+if [ "$x" = 2 -a "$x" != 3 ] || \	# \ for next line.
+	[ $x = 4 ]; then
+	echo "This is good"
+fi
+
+# judge by [[ ... ]]
+[[ "x$1" = x || "$1" = "KFC" || "$1" = "abc" ]] && echo "nothing"
+
