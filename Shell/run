@@ -1,0 +1,51 @@
+#!/bin/bash
+
+# The script can compile files of different languages in an easy way.
+
+cmd="${0##*/}"	# In case of modifying the name of file.
+
+# Usage
+usage()
+{
+	cat <<-EOF >&2
+	Usage: $cmd <file>
+	       $cmd --help(-h)	--> Show Usage.
+	[Support '.c' '.cpp' '.py' files]
+	EOF
+}
+
+# C.
+comp_run_c()
+{
+	x=${1%%.c*}		# '%%' %%O* --> 截取最后"O"的左侧str，删除右侧str
+					# '%' --> 截取最前"O"的左侧str。
+	gcc -g -o ${x} $1 && echo -e "---> \033[33;40m${x}\033[0m"
+	./${x}
+	rm -f ${x}
+}
+
+# C++.
+comp_run_c_plus()
+{
+	x=${1%%.cpp*}
+	g++ $1 -o ${x} && echo -e "---> \033[33;40m${x}\033[0m"
+	./${x}
+	rm -f ${x}
+}
+
+# Python.
+run_python()
+{
+	python3 $1
+}
+
+[[ "w$1" = "w" || "$1" = "-h" || "$1" = "--help" ]] && usage && exit 1
+
+case ${1##*.} in		# '##' ##*O --> 截取最后"."的右侧str，删除左侧str
+	"c") comp_run_c $1 ;;
+	"cpp") comp_run_c_plus $1 ;;
+	"py") run_python $1 ;;
+	*) echo -e "\033[33;40mWrong Option!\033[0m" && usage ;;
+esac
+
+exit 1
