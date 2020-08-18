@@ -1,47 +1,53 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-int integer[] = {45, 93, 302, 55, 12, 234};
-char *words[] = {"orange", "read", "apple", "no", "great", "elephant"};
+static int integer[] = {45, 93, 302, 55, 12, 234};
+const char *words[] = {"orange", "read", "apple", "no", "great", "elephant"};
+
+#define INT_LEN sizeof(integer)/sizeof(int)
+#define WORD_LEN sizeof(words)/sizeof(char *)
 
 int cmp_int(const void *a, const void *b)
 {
-	return (*(int *)a - *(int *)b );
+	return (*(int *)a - *(int *)b);
 }
 
 int cmp_str(const void* a, const void *b)
 {
-	return strcmp(a ,b);
+	return strcmp(a, b);
 }
 
-void Print(int x)		// print in different style
+void Print(int index)
 {
 	int i = 0;
-	for(i=0; i<6; i++){
-		if(x)
+
+	if(index){
+		for(i = 0; i < WORD_LEN; i++)
 			printf("%s ", words[i]);
-		else
+	}else{
+		for(i = 0; i < INT_LEN; i++)
 			printf("%d ", integer[i]);
 	}
 	printf("\n");
 }
 
-void Sort(int index)		// 0:int	1:string
+void Sort_and_Print(int index)		// 0:int	1:string
 {
-	int i = 0;
-	printf("Before List\n");
+	printf("Before Sort:\n");
 	Print(index);
 	if(index)
-		qsort(words, 6, sizeof(int), cmp_str);
+		qsort(words, WORD_LEN, sizeof(char *), cmp_str);
 	else
-		qsort(integer, 6, sizeof(int), cmp_int);
-	printf("\nAfter List:\n");
+		qsort(integer, INT_LEN, sizeof(int), cmp_int);
+	printf("After Sort:\n");
 	Print(index);
+	printf("--------\n");
 }
 
 int main()
 {
-	Sort(0);
-	Sort(1);
+	Sort_and_Print(0);
+	Sort_and_Print(1);
 }
 
