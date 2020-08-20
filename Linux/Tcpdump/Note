@@ -3,7 +3,9 @@
 * In case that u are required to use tcpdump to capture packages. *
 *******************************************************************
 
-capture while writing to a file:
-	tcmdump -i athX -w a.pcap 
+capture original package datum, and write to A.pcap:
+	- tcpdump -i athX -w A.pcap
 
+capture the description of packages, and write to B.pcap:
+	- tcpdump -i athX > B.pcap
 
