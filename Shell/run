@@ -39,12 +39,22 @@ run_python()
 	python3 $1
 }
 
+#Java
+comp_run_java()
+{
+	x=${1%%.java*}
+	javac $1 && echo -e "---> \033[33;40m${x}.class\033[0m"
+	java ${x}
+	rm -f ${x}.class
+}
+
 [[ "w$1" = "w" || "$1" = "-h" || "$1" = "--help" ]] && usage && exit 1
 
 case ${1##*.} in		# '##' ##*O --> 截取最后"."的右侧str，删除左侧str
 	"c") comp_run_c $1 ;;
 	"cpp") comp_run_c_plus $1 ;;
 	"py") run_python $1 ;;
+	"java") comp_run_java $1 ;;
 	*) echo -e "\033[33;40mWrong Option!\033[0m" && usage ;;
 esac
 

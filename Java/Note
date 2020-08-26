@@ -1,0 +1,27 @@
+############## Installation and Configuration ##############
+To configure Java on Linux, we need to install JDK and JRE.
+- JDK: Java Development Kit. It provides the developing Envs.
+  [Similar to SDK: Software DK, containing functions and compile programs.]
+- JRE: Java Runtime Environment, which is for Users (not developers)
+
+> apt install default-jdk
+> apt install default-jre
+
+After installation, Set Java Values to environment.
+1.Find the resource path of java.
+> whereis java
+
+2.Check all related pathes given, focus on "Link"
+> ll /usr/bin/java 	## /usr/bin/java -> /etc/alternatives/java
+> ll /etc/alternatives/java
+
+3.Ensure the absolute path, Add to Env Variable.
+> echo -e "JAVA_HOME=\"<path>\"" >> /etc/environment
+
+
+##############  Compile and run ################
+File Name should be the same to Class Name, then compile.
+> javac hello.java
+> java hello
+
+
