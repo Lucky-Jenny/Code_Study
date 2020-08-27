@@ -1,0 +1,27 @@
+# Record the cmds which is related to system.
+#!/bin/bash
+
+# check memory usage(default->KB, "-m"->MB)
+free -m
+
+
+# monitor all the process in the system.(Real-time)
+top;
+# monitor the process of one user
+top -u LX
+
+# List all the items:
+-PID:	Process ID
+-USER:	Process User
+-PR:	Priority--> Value smaller, Priority higher.
+-NI:	Relate to Priority, if NI=0, P not change; NI>0, P low; NI<0, P high.
+-VIRT:	Virtual Memory used by process.
+-RES:	Resident Memory ...
+-SHR:	Shared Memory ...
+[Diff 3 types of memory, URL: https://www.jianshu.com/p/52577c63f898 ]
+-S: 	State--> S:sleep; R:running; Z:zombie; N:Negative Priority
+-%CPU:	Usage rate of cpu
+-%MEM:	Usage rate of memory
+-TIME+:	Toal Time that CPU consumed by the process
+-COMMAND: name of the command.
+
