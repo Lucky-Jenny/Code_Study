@@ -69,7 +69,8 @@ set tabstop=4
 " 键入tab时，自动用空格替换tab，空格长度等于tabstop的设置
 "set expandtab
 
-" 使用NERDTree在vim中显示目录结构(先下载: wget http://www.vim.org/scripts/download_script.php?src_id=17123 -O nerdtree.zip)
+" 用NERDTree在vim中显示目录结构(先下载: wget http://www.vim.org/scripts/download_script.php?src_id=17123 -O nerdtree.zip)
+" 使用方法可参考: https://blog.51cto.com/chinalx1/2084871
 map <F4> :NERDTreeToggle<CR>
 
 " 跨文件进行函数的切换，可以使用ctag(先下载: sudo apt-get install exuberant-ctags)
