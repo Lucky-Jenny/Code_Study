@@ -1,18 +1,22 @@
 #include <stdio.h>
 
+#define WHAT 0
 
 struct Object{
 	int num;
 	char *name;
 	char value[128];
 };
-
 typedef struct Object Object_t;
 
 Object_t lx[] = {
 	{ 0, "xiao", "basketball" },
-	{ 1, "alex", "snooker" },
-	{ 2, "gyj", "baobao" },
+	{ 1, "gyj", "love" },
+#if WHAT						// define will affect the length of struct.
+	{ 2, "alex", "snooker" },
+	{ 3, "niko", "major" },
+	{ 4, "kd", "champion" },
+#endif
 	{ 99, NULL, 0 }
 };
 
@@ -21,6 +25,7 @@ void Struct_3()
 	int i = 0, len = 0;
 
 	len = sizeof(lx)/sizeof(Object_t);
+	printf("len=%d\n", len);
 	for(i = 0; (i < len) && (lx[i].name); i++){
 		printf("%d\t%s\t%s\n", lx[i].num, lx[i].name, lx[i].value);
 	}
