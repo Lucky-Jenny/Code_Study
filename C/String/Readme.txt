@@ -23,4 +23,6 @@ magic.c
 substr_add.c substr_del.c
 删除/添加子串
 
+substr_grep.c
+找出其中最大/最小的子串
 

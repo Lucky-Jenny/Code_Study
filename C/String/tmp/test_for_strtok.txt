@@ -1,0 +1,3 @@
+This is the logs	: from DUT.
+[wifi0] FWLOG: [87205098] WAL_DBGID_XCESS_FAILURES ( 0xffff, 0x2, 0x0 )
+
