@@ -1,3 +1,8 @@
+#!/usr/bin/pyhton
+
+import os
+
+
 people = {
 	"name": "xiao",
 	"age" : 23,
@@ -7,5 +12,5 @@ people = {
 def funx(m): 
 	print("Hello", m)
 
-
+print("getiud= %d" % os.getuid())
 
