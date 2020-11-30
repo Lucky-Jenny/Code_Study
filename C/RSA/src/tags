@@ -1,0 +1,93 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+ADD	config.h	/^	ADD,		\/\/ Addition$/;"	e	enum:METHOD
+ASC_OFFSET	config.h	16;"	d
+BNA	RSA.c	/^static struct bigint BNA = {"A", {0}, 0, 0};$/;"	v	typeref:struct:bigint	file:
+BNB	RSA.c	/^static struct bigint BNB = {"B", {0}, 0, 0};$/;"	v	typeref:struct:bigint	file:
+BNC	RSA.c	/^static struct bigint BNC = {"C", {0}, 0, 0};$/;"	v	typeref:struct:bigint	file:
+BN_LEN	config.h	20;"	d
+BN_degrese	Big_Number.c	/^void BN_degrese(pBIGINT BNx)$/;"	f
+BN_print	Big_Number.c	/^void BN_print(pBIGINT bn)$/;"	f
+BN_zero	Big_Number.c	/^void BN_zero(pBIGINT bn)$/;"	f
+BNa	RSA.c	/^static pBIGINT BNa = &BNA, BNb = &BNB, BNc = &BNC;$/;"	v	file:
+BNb	RSA.c	/^static pBIGINT BNa = &BNA, BNb = &BNB, BNc = &BNC;$/;"	v	file:
+BNc	RSA.c	/^static pBIGINT BNa = &BNA, BNb = &BNB, BNc = &BNC;$/;"	v	file:
+BNcpy	Big_Number.c	/^void BNcpy(pBIGINT bn1, pBIGINT bn2, int p1, int p2)$/;"	f
+BNjoint	Big_Number.c	/^int BNjoint(pBIGINT bn1, pBIGINT bn2, int p1, int p2)$/;"	f
+BigIntAdd	Big_Number.c	/^void BigIntAdd(pBIGINT BNa, pBIGINT BNb, pBIGINT BNc)$/;"	f
+BigIntCompare	Big_Number.c	/^int BigIntCompare(pBIGINT n1, pBIGINT n2)$/;"	f
+BigIntDiv	Big_Number.c	/^void BigIntDiv(pBIGINT BNa, pBIGINT BNb, pBIGINT BNc, pBIGINT residue)$/;"	f
+BigIntFac	Big_Number.c	/^void BigIntFac(pBIGINT BNa, pBIGINT BNc)$/;"	f
+BigIntMul	Big_Number.c	/^void BigIntMul(pBIGINT BNa, pBIGINT BNb, pBIGINT BNc)$/;"	f
+BigIntPower	Big_Number.c	/^void BigIntPower(pBIGINT BNa, pBIGINT BNb, pBIGINT BNc)$/;"	f
+BigIntSub	Big_Number.c	/^void BigIntSub(pBIGINT BNa, pBIGINT BNb, pBIGINT BNc)$/;"	f
+BigNum_To_Int	Big_Number.c	/^int BigNum_To_Int(pBIGINT bn)$/;"	f
+BigNum_To_Str	Big_Number.c	/^char *BigNum_To_Str(pBIGINT bn)$/;"	f
+Calculate_Big_Numer	Big_Number.c	/^void Calculate_Big_Numer(enum METHOD way, ...)$/;"	f
+Char_To_Int	RSA.c	/^int Char_To_Int(char x[])$/;"	f
+CheckParse	main_rsa.c	/^bool CheckParse(int argc, char **argv)$/;"	f
+Check_Valid	Big_Number.c	/^int Check_Valid(char str[])$/;"	f
+CoPrime	RSA.c	/^bool CoPrime(unsigned int P, unsigned int Q)$/;"	f
+DECRYPT_FILE	config.h	10;"	d
+DIV	config.h	/^	DIV,		\/\/ Division -----> Quotient + Module$/;"	e	enum:METHOD
+ENCRYPT_FILE	config.h	11;"	d
+FAC	config.h	/^	FAC,		\/\/ Factorial$/;"	e	enum:METHOD
+FileIn	RSA.c	/^void FileIn(const char *strFile, char inBuff[])$/;"	f
+FileOut	RSA.c	/^void FileOut(char *strOut, const char *strFile)$/;"	f
+Find_Prime_Num	prime_number.c	/^unsigned int Find_Prime_Num()$/;"	f
+GCD	RSA.c	/^unsigned int GCD(unsigned int a, unsigned int b)$/;"	f
+GetKey	RSA.c	/^int GetKey(const char *strFile, struct pPairkey *pkey)$/;"	f
+Int_Length	RSA.c	/^int Int_Length(int n)$/;"	f
+Int_To_BigNum	Big_Number.c	/^void Int_To_BigNum(int x, pBIGINT bn)$/;"	f
+IsPrimeNumber	RSA.c	/^bool IsPrimeNumber(unsigned int num)$/;"	f
+Is_BN_zero	Big_Number.c	/^int Is_BN_zero(pBIGINT bn)$/;"	f
+Judge_Prime	prime_number.c	/^int Judge_Prime(char x[])$/;"	f
+KEY_FILE	config.h	12;"	d
+LCM	RSA.c	/^unsigned int LCM(unsigned int a, unsigned int b)$/;"	f
+MAX_E_D	config.h	22;"	d
+MAX_FILE	config.h	13;"	d
+METHOD	config.h	/^enum METHOD{$/;"	g
+MOD	config.h	/^	MOD,		\/\/ Modulus$/;"	e	enum:METHOD
+MUL	config.h	/^	MUL,		\/\/ Multiplication$/;"	e	enum:METHOD
+MakePairkey	RSA.c	/^int MakePairkey(unsigned int uiP, unsigned int uiQ, struct pPairkey *pkey)$/;"	f
+Offset_Char	RSA.c	/^int Offset_Char(char alpha, int flag)		\/\/ flag=1: set; flag=0: reset$/;"	f
+POW	config.h	/^	POW,		\/\/ Power$/;"	e	enum:METHOD
+PRIME_END	prime_number.c	7;"	d	file:
+PRIME_LEN	config.h	19;"	d
+PrintKey	RSA.c	/^void PrintKey(struct pPairkey *pkey)$/;"	f
+Print_and_Echo_to_File	prime_number.c	/^void Print_and_Echo_to_File(char x[])$/;"	f
+QUO	config.h	/^	QUO,		\/\/ Quotient$/;"	e	enum:METHOD
+RSA_Decrypt	RSA.c	/^void RSA_Decrypt(struct pPairkey *pkey, char *cipher, char *plaintext)$/;"	f
+RSA_Encrypt	RSA.c	/^void RSA_Encrypt(struct pPairkey *pkey, char *buff, char *cipher)$/;"	f
+RSA_LEN	config.h	21;"	d
+Rand_Large_Num	prime_number.c	/^void Rand_Large_Num(char num[])$/;"	f
+SUB	config.h	/^	SUB,		\/\/ Subtraction$/;"	e	enum:METHOD
+SaveKey	RSA.c	/^void SaveKey(const char *strFile, struct pPairkey *pkey)$/;"	f
+Str_To_BigNum	Big_Number.c	/^void Str_To_BigNum(char str[], pBIGINT bn)$/;"	f
+TEST	config.h	25;"	d
+TEST_BN	config.h	27;"	d
+TEST_PRIME	config.h	28;"	d
+TEST_RSA	config.h	26;"	d
+Usage	main_rsa.c	/^void Usage()$/;"	f
+bigint	config.h	/^typedef struct bigint{$/;"	s
+bool	config.h	/^}bool;$/;"	t	typeref:enum:__anon1
+d	config.h	/^	unsigned int d;$/;"	m	struct:pPairkey
+digit	config.h	/^	int digit;					\/\/ length of this BN$/;"	m	struct:bigint
+e	config.h	/^	unsigned int e;$/;"	m	struct:pPairkey
+false	config.h	/^	false = 0,$/;"	e	enum:__anon1
+main	main_rsa.c	/^int main(int argc, char **argv)$/;"	f
+n	config.h	/^	unsigned int n;$/;"	m	struct:pPairkey
+name	config.h	/^	char name[32];$/;"	m	struct:bigint
+num	config.h	/^	char num[BN_LEN];			\/\/ save in 'char', show in 'int'$/;"	m	struct:bigint
+pBIGINT	config.h	/^}*pBIGINT;$/;"	t	typeref:struct:bigint
+pPairkey	config.h	/^static struct pPairkey{$/;"	s
+pairkey	config.h	/^}pairkey;$/;"	v	typeref:struct:pPairkey
+prime	prime_number.c	/^int prime[10]={2,3,5,7,11,13,17,19,23,29};$/;"	v
+print_on_Test	RSA.c	/^void print_on_Test(char *format, ...)$/;"	f
+sign	config.h	/^	int sign;					\/\/ symbol: 1-->positive; -1-->negative$/;"	m	struct:bigint
+test_print	prime_number.c	/^void test_print(char str[], int num)$/;"	f
+true	config.h	/^	true  = 1$/;"	e	enum:__anon1
