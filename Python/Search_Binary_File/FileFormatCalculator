@@ -1,0 +1,90 @@
+#coding:utf-8
+from __future__ import division
+import magic
+import os
+import re
+import codecs
+import zipfile
+import sys
+
+Cnt_BN_File = 0
+Cnt_File = 0
+Cnt_Zip_File=0
+
+def is_binary_file_1(ff):
+    '''
+    Determined by Text file data type    
+    :param ff: file path
+    :return: True or False，whether it's binary file or not
+    '''
+    _TEXT_BOMS = (
+        codecs.BOM_UTF16_BE,
+        codecs.BOM_UTF16_LE,
+        codecs.BOM_UTF32_BE,
+        codecs.BOM_UTF32_LE,
+        codecs.BOM_UTF8,
+    )
+    try:
+        with open(ff, 'rb') as file:
+            initial_bytes = file.read(8192)
+            file.close()
+            for bom in _TEXT_BOMS:
+                if initial_bytes.startswith(bom):
+                    continue
+                else:
+                    if b'\0' in initial_bytes:
+                        #print(True)
+                        return True
+    except Exception as e:
+        return False
+
+def is_binary_file_2(ff):
+    '''
+    Determined by magic
+    :param ff: file path
+    :return: True or False，whether it's binary file or not
+    '''
+    mime_kw = 'x-executable|x-sharedlib|octet-stream|x-object'
+    try:
+        magic_mime = magic.from_file(ff, mime=True)
+        magic_hit = re.search(mime_kw, magic_mime, re.I)
+        if magic_hit:
+            #print(True)
+            return True
+        else:
+            #print(False)
+            return False
+    except Exception as e:
+        return False
+
+# Recursively traverses all paths and find binary files
+def Recursive_Traversal_BN(path):
+
+    global Cnt_BN_File
+    global Cnt_File
+    global Cnt_Zip_File
+
+    parents = os.listdir(path)
+    for parent in parents:
+        child = os.path.join(path,parent)
+        # print(child)
+        if os.path.isdir(child):
+            Recursive_Traversal_BN(child)
+        else:
+            Cnt_File += 1
+            print(child)
+            if(any((is_binary_file_1(child), is_binary_file_2(child)))):
+                print(True)
+                Cnt_BN_File += 1
+                if(zipfile.is_zipfile(child)):
+                    Cnt_Zip_File += 1
+                elif(child.endswith(".gz")):
+                    Cnt_Zip_File += 1
+
+if __name__ == "__main__":
+    folder_path = sys.argv[1]
+    Recursive_Traversal_BN(folder_path)
+    print(("Binary files: {0}  There are {1} compressed files among them").format(Cnt_BN_File, Cnt_Zip_File))
+    print(("The number of source code files:{0}").format(Cnt_File-Cnt_BN_File))
+    print(("The number of all files:{0}").format(Cnt_File))
+    print("Ratio of Binary files: {:.3%}".format(Cnt_BN_File/Cnt_File))
