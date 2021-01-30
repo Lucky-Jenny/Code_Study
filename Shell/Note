@@ -1,0 +1,9 @@
+# This Note will record what I acquire from Shell script.
+
+Single quote
+- How to print ab'cd ?
+ If echo 'ab'cd' -----> Linux will let u continue to input until meet '.
+- Solution
+ echo 'ab'\''cd'
+ (Sparate ab and cd, use ESC to show ' )
+
