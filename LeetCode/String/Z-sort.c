@@ -36,6 +36,7 @@ char *Z_Convert(char *s, int numRows)
 	arr = (int **)malloc(sizeof(int *) * numRows);
 	for(i = 0; i < numRows; i++){
 		arr[i] = (int *)malloc(sizeof(int) * chainNum);
+		memset(arr[i], 0, sizeof(int) * chainNum);
 	}
 #else
 	int arr[numRows][chainNum];
