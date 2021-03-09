@@ -62,4 +62,4 @@ case ${1##*.} in		# '##' ##*O --> 截取最后"."的右侧str，删除左侧str
 	*) echo -e "\033[33;40mWrong File!\033[0m" && usage ;;
 esac
 
-exit 1
+exit 0
