@@ -78,7 +78,7 @@ void Test_RomanToInt()
 
 	printf("[String] %s\n", x);
 	num = RomanToInt(x);
-	printf("==> %d\n", num);
+	printf("--> \033[40;32m%d\033[0m\n", num);
 
 }
 
@@ -128,7 +128,9 @@ void Test_IntToRoman()
 
 	printf("[Num] %d\n", x);
 	ret = IntToRoman(x);
-	printf("==> %s\n", ret);
+	printf("--> \033[40;32m%s\033[0m\n", ret);
+
+	free(ret);
 }
 
 int main()

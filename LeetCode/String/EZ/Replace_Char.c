@@ -10,7 +10,7 @@ E.g. 192.168.23.45
 
 char * defangIPaddr(char * address){
     char *p = address;
-	char *buffer = (char *)malloc(strlen((address)+7)*sizeof(char));
+	char *buffer = (char *)malloc(sizeof(char)* (strlen(address) + 7));
 	char *q = buffer;
 
     while(*p != '\0'){
@@ -33,6 +33,8 @@ int main()
 	char *invld_ip = NULL;
 
 	invld_ip = defangIPaddr(IP);
-	printf("%s\n", invld_ip);
+	printf("--> \033[40;32m%s\033[0m\n", invld_ip);
+
+	free(invld_ip);
 }
 

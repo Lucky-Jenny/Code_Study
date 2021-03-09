@@ -135,7 +135,6 @@ void Print_Letters(int num)
 	char **ret;
 	int i = 0, size = 1;
 
-	printf("[Num] %d\n", num);
 	snprintf(s, sizeof(s), "%d", num);
 #if USE_MY_CODE
 	for(i = 0; i < strlen(s); i++){
@@ -148,24 +147,31 @@ void Print_Letters(int num)
 #else
 	ret = letterCombinations(s, &size);
 #endif
-	printf("size=%d\n==> [ ", size);
+	printf("[Num] %d\n--> [ \033[40;32m", num);
 	for(i = 0; i < size; i++){
 		printf("%s ", ret[i]);
 		free(ret[i]);
 	}
-	printf("]\n");
+	printf("\033[0m]\nsize = \033[40;32m%d\033[0m\n", size);
+
 	//free
 	free(ret);
 }
 
+void Show_Num_Letters()
+{
+	printf("--------\033[40;34m\n"
+	"1(!@#)  2(abc)  3(def)\n"
+	"4(ghi)  5(jkl)  6(mno)\n"
+	"7(pqrs) 8(tuv)  9(wxyz)\n"
+	"\033[0m--------\n");
+}
+
 int main()
 {
-	int n1 = 23;
-	int n2 = 49;
-	int n3 = 294;
-	// sample here
-	int x = n2;
+	int x = 23;
 
+	Show_Num_Letters();
 	Print_Letters(x);
 }
 

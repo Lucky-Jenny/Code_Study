@@ -11,7 +11,7 @@ https://leetcode-cn.com/problems/longest-repeating-character-replacement
 #include <stdlib.h>
 #include <string.h>
 
-#define DEBUG 1
+#define DEBUG 0
 
 int CharactorReplacement(char *s, int k)
 {
@@ -48,6 +48,9 @@ int CharactorReplacement(char *s, int k)
 		}
 
 	}
+#if DEBUG
+	free(buff); 		// Without free(), Sanitizer: 'detected memory leaks'
+#endif
 	return len;
 }
 
@@ -61,6 +64,6 @@ int main()
 
 	printf("[String] %s   k=%d\n", x, k);
 	ret = CharactorReplacement(x, k);
-	printf("ret=%d\n", ret);
+	printf("ret = \033[40;32m%d\033[0m\n", ret);
 }
 

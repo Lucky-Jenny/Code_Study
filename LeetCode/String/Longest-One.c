@@ -17,7 +17,7 @@ https://leetcode-cn.com/problems/max-consecutive-ones-iii/
 #include <stdlib.h>
 #include <string.h>
 
-#define TEST 1
+#define TEST 0
 
 int longestOnes(int *A, int ASize, int K)
 {
@@ -65,24 +65,28 @@ int main()
 	int a2[] = {0,0,1,1,0,0,1,1,1,0,1,1,0,0,0,1,1,1,1};
 	int a3[] = {0,0,0,1};
 	int K = 0;
-	int *x = a1;
+	int *x;
 	int length = 0, ret = 0;
 
+
+	x = a2;
 	/*
 	  注意：C语言不能通过指针获取所指向的内存大小 !!!
 	  解决：从数组获取 (唯一办法)
 	*/
-	length = sizeof(a1)/sizeof(int);
+	length = sizeof(a2)/sizeof(int);
 	//print
 #if TEST
-	printf("len = %d\nA = [", length);
+	printf("len = %d\n", length);
 #endif
+	printf("A = [ ");
 	for(int i = 0; i < length; i++){
 		printf("%d ", x[i]);
 	}
 	printf("]\tK = %d\n", K);
 	
 	ret = longestOnes(x, length, K);
-	printf("==> %d\n", ret);
+	printf("==> \033[40;32m%d\033[0m\n", ret);
+
 }
 

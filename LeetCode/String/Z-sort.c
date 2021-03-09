@@ -68,7 +68,10 @@ char *Z_Convert(char *s, int numRows)
 			if(arr[row][line])
 				ret[i++] = (char)arr[row][line];
 		}
+		free(arr[row]); 	// free -> avoid detected mem leak
 	}
+	free(arr);				// free
+
 	ret[strlen(s)] = '\0';
 	return ret;
 }
@@ -81,7 +84,9 @@ int main()
 
 	printf("[String] %s   line=%d\n", x, line);
 	result = Z_Convert(str1, line);
-	printf("==>%s\n", result);
+	printf("--> \033[40;32m%s\033[0m\n", result);
+
+	free(result);
 }
 
 

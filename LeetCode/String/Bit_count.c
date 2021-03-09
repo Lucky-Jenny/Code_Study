@@ -16,8 +16,6 @@ https://leetcode-cn.com/problems/counting-bits/
 #include <string.h>
 #include <stdlib.h>
 
-#define TEST 1
-
 int *countBits(int num, int *returnSize)
 {
 	int i = 0;
@@ -43,11 +41,11 @@ int main()
 	printf("num = %d\n", n);
 	bits = countBits(n, &size);
 	// print
-	printf("[ ");
+	printf("--> [ \033[40;32m");
 	for(int j = 0; j <= n; j++){
 		printf("%d ", bits[j]);
 	}
-	printf("]\nsize: %d\n", size);
+	printf("\033[0m]\nsize: \033[40;32m%d\033[0m\n", size);
 	
 }
 

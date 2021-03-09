@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdbool.h>
 
-#define TEST 1
+#define TEST 0
 
 /*
 Parentheses Matching: Match {} [] () in right way.
@@ -18,13 +18,12 @@ https://leetcode-cn.com/problems/valid-parentheses/
 */
 bool isValid(char *s)
 {
-	int i = 0, top = 0;
+	int i = 0, len = 0, top = 0;
 	char *stack = NULL;
-	int len = strlen(s);
 
 	// Check the length. If valid, set len --> number of pairs.
-	if(len % 2 == 0)
-		len /= 2;
+	if(strlen(s) % 2 == 0)
+		len = strlen(s) / 2;
 	else
 		return false;
 
@@ -36,15 +35,15 @@ bool isValid(char *s)
 		else{
 			if(s[i] == ')'){
 				if(stack[top] != '(')
-					return false;
+					break;
 			}else if(s[i] == ']'){
 				if(stack[top] != '[')
-					return false;
+					break;
 			}else if(s[i] == '}'){
 				if(stack[top] != '{')
-					return false;
+					break;
 			}else{
-				return false;
+				break;
 			}
 			len--;
 			top--;
@@ -54,6 +53,7 @@ bool isValid(char *s)
 #endif
 		i++;
 	}
+	free(stack);
 
 	if(len == 0)
 		return true;
@@ -63,28 +63,42 @@ bool isValid(char *s)
 
 // Test
 struct Check_Object{
-	char *sample;
-	bool vld;
+	char *str;
+	int value;
 };
 typedef struct Check_Object Check_t;
 
-Check_t check_list[] = {
-	{"()[]{}", true},
-	{"{()}", true},
-	{"()))", false},
-	{")[", false},
-	{"((", false},
-	{"(([]){})", true},
-	{NULL, NULL}
+Check_t vld_list[] = {
+	{"()[]{}", 1},
+	{"{()}", 1},
+	{"()))", 0},
+	{")[", 0},
+	{"((", 0},
+	{"(([]){})", 1},
+	{NULL, -1}
 };
+
+#define TAB 20
+/* Print in Aligned TAB */
+print_tab(char *s, char *val)
+{
+	int need_tab = TAB - strlen(s);
+
+	printf("s: %s", s);
+	for(int i = 0; i < need_tab; i++) printf(" ");
+	printf("\033[40;32m%s\033[0m ", val);
+}
 
 void Test_Vld_Parenthese()
 {
-	int i = 0, isVld = 0;
+	int i = 0, is_vld = 0, need_tab = 0;
 
-	for(i = 0; check_list[i].sample != NULL; i++){
-		printf("s:%s\n", check_list[i].sample);
-		if(isValid(check_list[i].sample) == check_list[i].vld)
+	for(i = 0; vld_list[i].str != NULL; i++){
+		is_vld = (int)isValid(vld_list[i].str);
+		//print
+		print_tab(vld_list[i].str, is_vld == 1? "True": "False");
+
+		if(is_vld == vld_list[i].value)
 			printf("--> right\n");
 		else
 			printf("--> wrong\n");
@@ -205,29 +219,29 @@ void Test_Gnrt_Parenthese()
 	char **x;
 	int i = 0, size = 0, n = SAMPLE;
 
-	printf("n=%d\t\n", n);
+	printf("n = %d\n", n);
 	x = generateParenthesis(n, &size);
 	//print
-	printf("Parentheses_str_Size=%d\n[ ", size);
+	printf("--> [ ");
 	for(i = 0; i < size; i++){
 		if(i == 0)
-			printf("\"%s\" ", x[i]);
+			printf("\"\033[40;32m%s\033[0m\" ", x[i]);
 		else
-			printf(",\"%s\" ", x[i]);
+			printf(",\"\033[40;32m%s\033[0m\" ", x[i]);
 		free(x[i]);
 	}
 	printf("]\n");
+	printf("Size = \033[40;32m%d\033[0m\n", size);
+
 	free(x);
 }
 
 /*
 给定只包含'('和')'的字符串，找出最长有效（格式正确且连续）括号子串的长度。
 
-E.g. "(()"
-	--> 2
+E.g. "(()"		--> 2
 
-	 ")()())"
-	--> 4
+	 ")()())"	--> 4
 
 (Difficult)
 
@@ -235,44 +249,16 @@ URL:
 https://leetcode-cn.com/problems/longest-valid-parentheses/
 */
 
-#if 0
-// My code: works but is not effect
-int longestValidParentheses(char *s)
-{
-	int result = 0, i = 0, j = 0, mark = 0;
-
-	for(i = 0; i < strlen(s); i++){
-		if(s[i] == ')')
-			continue;
-
-		mark = 1;
-		for(j = i+1; j < strlen(s); j++){
-			if(s[j] == '(')
-				mark++;
-			else
-				mark--;
-#if TEST
-			printf("i=%d j=%d mark=%d\ttmp: ", i, j, mark);
-			for(int u = i; u <= j; u++)
-				printf("%c", s[u]);
-			printf("\n");
-#endif
-			if(mark == 0){
-				result = (j-i+1 > result)? j-i+1: result;
-			}
-		}
-	}
-	return result;
-}
-#endif
-
 /*
  Dynamic Programming 动态规划
 */
 int longestValidParentheses(char *s)
 {
 	int result = 0, i = 0, lastPrephsis = 0, top = -1;
-	int *dp = (int *)malloc(sizeof(int) * strlen(s));
+	int *dp;
+
+	dp = (int *)malloc(sizeof(int) * strlen(s));
+	memset(dp, 0, sizeof(int) * strlen(s));
 
 	/* Mark the longest valid pr length of current index */
 	for(i = 0; i < strlen(s); i++){
@@ -280,57 +266,63 @@ int longestValidParentheses(char *s)
 			if(i == 0)
 				continue;
 			if(s[i-1] == '('){
-				dp[i] = ((i >= 2)? dp[i-2]: 0) + 2;
+				dp[i] = (i >= 2? dp[i-2]: 0) + 2;
 			}else{
-				/* dp[i-1] = valid length of sub-pr
-				   So i - dp[i-1] = last index of current pre-perenthese.
+				/*
+				  dp[i-1] = valid pr-length of [i-1].
+				  i - dp[i-1] = index of [i-1] pre-perenthese "(".
+					---> (...........)   )
+					   i-dp[i-1     i-1  i
 				*/
 				lastPrephsis = i - dp[i-1];
-				if(lastPrephsis > 0 && s[lastPrephsis-1] == '(')
-					dp[i] = dp[i-1] + 
+				if(lastPrephsis > 0 && s[lastPrephsis-1] == '('){
+					dp[i] = dp[i-1] +
 						(lastPrephsis >= 2? dp[lastPrephsis-2]: 0) + 2;
+				}
 			}
 			result = (dp[i] > result)? dp[i]: result;
 		}
 	}
+	free(dp);
+
 	return result;
 }
 
 // Test
-struct Check_Prs{
-	char *str;
-	int len;
-};
-typedef struct Check_Prs Check_p;
 
-Check_p check_pr[] = {
+Check_t count_list[] = {
 	{")(()())", 6},
 	{"))", 0},
 	{"()))", 2},
 	{")(", 0},
 	{"(())(", 4},
 	{")()())()()(", 4},
-	{NULL, 0}
+	{NULL, -1}
 };
 
 void Test_Longest_Pr()
 {
 	int i = 0, isVld = 0;
+	char val[4] = {0};
 
-	for(i = 0; check_pr[i].str != NULL; i++){
-		printf("s:%s\n", check_pr[i].str);
-		if(longestValidParentheses(check_pr[i].str) == check_pr[i].len){
-			printf("%d --> \033[40;32mright\033[0m\n", check_pr[i].len);
-		}else{
-			printf("[%d] but return %d", check_pr[i].len, longestValidParentheses(check_pr[i].str));
+	for(i = 0; count_list[i].str != NULL; i++){
+		snprintf(val, sizeof(val), "%d", count_list[i].value);
+		// print
+		print_tab(count_list[i].str, val);
+
+		if(longestValidParentheses(count_list[i].str) == count_list[i].value)
+			printf("--> right\n");
+		else
 			printf("--> \033[40;31mwrong\033[0m\n");
-		}
 	}
 }
 
 int main()
 {
-	//Test_Vld_Parenthese();
-	//Test_Gnrt_Parenthese();
+	printf("\033[40;34m[Judge Valid Parenthese str]\033[0m\n");
+	Test_Vld_Parenthese();
+	printf("\033[40;34m[Generate Parentheses according to Num]\033[0m\n");
+	Test_Gnrt_Parenthese();
+	printf("\033[40;34m[Count the length of Longest Valid Parenthese]\033[0m\n");
 	Test_Longest_Pr();
 }
