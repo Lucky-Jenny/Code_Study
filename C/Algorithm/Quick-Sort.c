@@ -20,7 +20,7 @@ int Rand_For_Array(int h[])
 
 	srand(time(0));
 	for(i = 0; i < LEN; i++)
-		h[i] = rand()%100;		// generate 0-99
+		h[i] = rand()%100;		// generate 0-99 in random
 }
 
 /*
