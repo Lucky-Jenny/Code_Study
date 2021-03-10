@@ -26,12 +26,6 @@ else:
 
 print("-------------------------------For")
 # Python------For
-fire = ["a", "b", "c", "d"]
-for i in fire:
-	print(i)
-	if i == "c":
-		break
-
 strx = "a"
 for i in range(6):	# control the frequency of the following codes.
 	print(strx)
@@ -40,7 +34,19 @@ strx = "b"
 for i in range(2, 10, 3):	# for(i=2; i<10; i+=3) 3 --> step-length
 	print(strx)
 	strx += "x"
+# break
+fire = ["a", "b", "c", "d"]
+for i in fire:
+	if i == "c":
+		break
+	print(i)
+# continue
+for i in [1,2,3,4,5,6]:
+	if i == 3:
+		continue
+	print(i)
 
+# pass
 for i in [0, 1, 2]:
 	pass			# codes in for should not be null!!
 
