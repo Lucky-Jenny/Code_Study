@@ -12,7 +12,7 @@ static void calc_magic(uint8 *data, uint32 n)
 {
 	uint32 *t = (uint32 *)data; //From 32 to 8.
 	n >>= 2;					//Length reduce 4 times
-	srand((uint32)"X");
+	srand((uint32)'X');
 	while(n-- > 0)
 		*t++ ^= (uint32)rand();
 }
@@ -46,11 +46,10 @@ void Print_data(uint8 *pd)
 
 int main()
 {
-	char *p;
-	p = malloc(200);
+	char *p = malloc(200);
 	uint32 x;
 	int i,j;
-	i = sprintf(p,"what\0");
+	i = sprintf(p, "what");
 	i = (i + 3) & ~3;	//This make sure i is multiple of 4.
 
 	printf("Origin String:\n");
@@ -64,5 +63,7 @@ int main()
 	calc_magic(p,i);
 	Print_data(p);
 	Print_Binary(p);
+
+	free(p);
 }
 

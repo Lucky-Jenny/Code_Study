@@ -34,20 +34,27 @@ void Print(int index)
 
 void Sort_and_Print(int index)		// 0:int	1:string
 {
-	printf("Before Sort:\n");
-	Print(index);
-	if(index)
+	switch(index){
+	case 0:
+		printf("Int Sort:\n[i] ");
+		Print(index);
 		qsort(words, WORD_LEN, sizeof(char *), cmp_str);
-	else
+		break;
+	case 1:
+		printf("Str Sort:\n[s] ");
+		Print(index);
 		qsort(integer, INT_LEN, sizeof(int), cmp_int);
-	printf("After Sort:\n");
+		break;
+	default: break;
+	}
+	printf("--> ");
 	Print(index);
-	printf("--------\n");
 }
 
 int main()
 {
 	Sort_and_Print(0);
+	printf("---------\n");
 	Sort_and_Print(1);
 }
 

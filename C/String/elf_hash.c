@@ -25,8 +25,7 @@ void Binary_printf(uint32 t)
 
 int main()
 {
-	char *p;
-	p = malloc(200);
+	char *p = malloc(200);
 	uint32 x;
 	int j=0;
 	int i= sprintf(p,"iam=lx");
@@ -42,6 +41,7 @@ int main()
 	Binary_printf(x);
 	printf("\n");
 
+	free(p);
 }
 
 

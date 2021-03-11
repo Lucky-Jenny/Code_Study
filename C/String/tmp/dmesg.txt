@@ -1,63 +1,16 @@
-[wifi0] FWLOG: [23575977] WAL_DBGID_XCESS_FAILURES ( 0xffff, 0x5, 0x1 )
-[wifi0] FWLOG: [23577001] WAL_DBGID_XCESS_FAILURES ( 0xffff, 0x4, 0x1 )
-[wifi0] FWLOG: [23583146] WAL_DBGID_XCESS_FAILURES ( 0xffff, 0x5, 0x1 )
-### HOST MSDU TTL Stats ###
-Host_msdu_ttl     :     0
-WAL Pdev stats:
-
-### MEM ###
  ############## Free memory###########
 IRAM Remaining:         3716
 DRAM Remaining:         91992
 SRAM Remaining:         1480
-
 ### Tx ###
-comp_queued       :     2238
-comp_delivered    :     3096
 msdu_enqued       :     261967
-wmm_drop          :     0
 local_enqued      :     261967
 local_freed       :     261967
 hw_queued         :     336516
 hw_reaped         :     336516
-mac underrun      :     0
-phy underrun      :     0
-hw_paused         :     20
-seq_posted        :     261977
-mu_seq_posted     :     0
-seq_failed        :     0
-seq_restarted     :     74539
-tx_abort          :     0
-mpdus_requed      :     74549
-mpdus_sw_flush    :     0
-mpdus_hw_filter   :     20
-mpdus_truncated   :     0
-mpdus_ack_failed  :     111786
-mpdus_expired     :     0
-excess retries    :     111786
-last rc           :     0
-sched self trig   :     0
-ampdu retry failed:     0
-illegal rate errs :     0
-pdev cont xretry  :     0
-pdev tx timeout   :     0
-pdev resets       :     1
-ppdu txop ovf     :     0
-mcast Drop        :     0
-
 ### Rx ###
-ppdu_route_change :     29
 status_rcvd       :     657697
-r0_frags          :     0
-r1_frags          :     865
-r2_frags          :     10024
 htt_msdus         :     28041
 htt_mpdus         :     28041
 loc_msdus         :     557708
 loc_mpdus         :     557708
-oversize_amsdu    :     0
-phy_errs          :     0
-phy_errs dropped  :     9721
-mpdu_errs         :     98705
-pdev_rx_timeout   :     0
-ovfl_mpdu_errs    :     0

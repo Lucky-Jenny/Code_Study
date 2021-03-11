@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 			case 'w':
 				printf("get option:'--write'\n");
 				printf("The argument is %s\n", optarg);break;
-			case '?':
+			default:
 				printf("Unknown option");break;
 
 		}
