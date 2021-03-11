@@ -198,6 +198,7 @@ int Check_Valid(char str[])
 	2.BN in Array should be reversed !!! 
 	3.XXX Cannot define function of 'pBIGINT'!!! XXX
 	  Because pointer will change original address.
+	4.Special handle when value = 0.
 */
 void Str_To_BigNum(char str[], pBIGINT bn)
 {
@@ -223,6 +224,16 @@ void Str_To_BigNum(char str[], pBIGINT bn)
 	}
 	while(*p == '0') p++;		// skip leading 0
 
+	/*
+	 fix Bug: "stack-buffer-underflow" reported in AddressSanitizer.
+	 - The issue happen in reverse the array		-----> line = 246
+	 - When value = 0, size = 1,
+		loop still go. which cause bkup memory leaked.
+	 - Therefore, return if detect value = 0.
+	*/
+	if(*p == '\0')
+		return;
+
 	while(*p != '\0'){
 		bkup[i++] = *p - '0';
 		p++;
@@ -247,30 +258,25 @@ void Int_To_BigNum(int x, pBIGINT bn)
 {
 	char str[32];
 
-	if(x == 0){	// fix stack-buffer-underflow in AddressSanitizer.
-		BN_zero(bn);
-		return;
-	}
-
-	sprintf(str, "%d", x);
+	snprintf(str, sizeof(str), "%d", x);
 	Str_To_BigNum(str, bn);
 }
 
 /*
  Func: Turn BN to char*
- Note: btter use strcpy() to get, because bn_str[] will free when func end.
+ Note: btter use snprintf(), more safety.
 */
 char *BigNum_To_Str(pBIGINT bn)
 {
-	int i = 0, j = 0;
-	char tmp[8], bn_str[BN_LEN] = {0};
-	char *p = bn_str;
+	int i = 0;
+	char tmp[4];
+	char *bn_str = (char *)malloc(sizeof(char) * BN_LEN);
 
 	for(i = bn->digit-1; i >= 0; i--){
 		sprintf(tmp, "%d", bn->num[i]);
 		strcat(bn_str, tmp);
 	}
-	return p;
+	return bn_str;
 }
 
 /*
@@ -449,7 +455,6 @@ void BigIntDiv(pBIGINT BNa, pBIGINT BNb, pBIGINT BNc, pBIGINT residue)
 			BigIntMul(K, BNb, K);
 			BigIntSub(tmp, K, residue);
 #if TEST_BN
-	//printf("", BigNum_To_Str(tmp), BigNum_To_Str(K), BigNum_To_Str(residue));
 	/* Cannot print in one line Because it will call parms at the same time. */
 			printf("[%s]-", BigNum_To_Str(tmp));
 			printf("[%s]=", BigNum_To_Str(K));
@@ -468,7 +473,7 @@ void BigIntDiv(pBIGINT BNa, pBIGINT BNb, pBIGINT BNc, pBIGINT residue)
 			BNjoint(tmp, residue, 0, residue->digit-1);
 	}
 #if TEST_BN
-	strcpy(result->name, "BN_quotient_tmp");
+	snprintf(result->name, sizeof(result->name), "BN_quotient_tmp");
 	BN_print(result);
 #endif
 	/* Recovery sign */
@@ -491,6 +496,10 @@ void BigIntDiv(pBIGINT BNa, pBIGINT BNb, pBIGINT BNc, pBIGINT residue)
 */
 void BigIntFac(pBIGINT BNa, pBIGINT BNc)
 {
+	if(Is_BN_zero(BNa)){
+		Int_To_BigNum(1, BNc);		// 0! = 1
+		return;
+	}
 	struct bigint Temp = {"temp", {0}, 0, 0}, Unit = {"unit", {0}, 0, 0};
 	pBIGINT tmp = &Temp, unit = &Unit;
 
@@ -567,7 +576,7 @@ void Calculate_Big_Numer(enum METHOD way, ...)
 				BigIntAdd(BNa, BNb, BNc);
 			else
 				BigIntSub(BNa, BNb, BNc);
-			strcpy(BNc->name, "BN_Addition");
+			snprintf(BNc->name, sizeof(BNc->name), "BN_Addition");
 			BN_print(BNc);
 			break;
 		case SUB:										// Subtraction
@@ -577,14 +586,14 @@ void Calculate_Big_Numer(enum METHOD way, ...)
 				BigIntSub(BNa, BNb, BNc);
 			else
 				BigIntAdd(BNa, BNb, BNc);
-			strcpy(BNc->name, "BN_Subtract");
+			snprintf(BNc->name, sizeof(BNc->name), "BN_Subtract");
 			BN_print(BNc);
 			break;
 		case MUL:										// Multiplication
 			BNc = va_arg(args, pBIGINT);
 			printf("\033[40;36mMultiply: bn1 * bn2 = bn3\033[0m\n");
 			BigIntMul(BNa, BNb, BNc);
-			strcpy(BNc->name, "BN_Multiply");
+			snprintf(BNc->name, sizeof(BNc->name), "BN_Multiply");
 			BN_print(BNc);
 			break;
 		case DIV:										// Division
@@ -596,8 +605,8 @@ void Calculate_Big_Numer(enum METHOD way, ...)
 				break;
 			}
 			BigIntDiv(BNa, BNb, BNc, BNd);
-			strcpy(BNc->name, "BN_quotient");
-			strcpy(BNd->name, "BN_residue");
+			snprintf(BNc->name, sizeof(BNc->name), "BN_quotient");
+			snprintf(BNd->name, sizeof(BNd->name), "BN_residue");
 			BN_print(BNc);
 			BN_print(BNd);
 			break;
@@ -610,7 +619,7 @@ void Calculate_Big_Numer(enum METHOD way, ...)
 				break;
 			}
 			BigIntDiv(BNa, BNb, BNc, BNd);
-			strcpy(BNc->name, "BN_Quotient");
+			snprintf(BNc->name, sizeof(BNc->name), "BN_Quotient");
 			BN_print(BNc);
 			break;
 		case MOD:										// Modulus
@@ -622,7 +631,7 @@ void Calculate_Big_Numer(enum METHOD way, ...)
 				break;
 			}
 			BigIntDiv(BNa, BNb, BNd, BNc);
-			strcpy(BNc->name, "BN_Modulus");
+			snprintf(BNc->name, sizeof(BNc->name), "BN_Modulus");
 			BN_print(BNc);
 			break;
 		case FAC:										// Factorial
@@ -631,7 +640,7 @@ void Calculate_Big_Numer(enum METHOD way, ...)
 				return;
 			}
 			printf("\033[40;36mFactorial: bn1! = bn3\033[0m\n");
-			strcpy(BNb->name, "BN_factorial");
+			snprintf(BNb->name, sizeof(BNc->name), "BN_factorial");
 			BigIntFac(BNa, BNb);
 			BN_print(BNb);
 			break;
@@ -642,7 +651,7 @@ void Calculate_Big_Numer(enum METHOD way, ...)
 			}
 			BNc = va_arg(args, pBIGINT);
 			printf("\033[40;36mPower: bn1^(bn2) = bn3\033[0m\n");
-			strcpy(BNc->name, "BN_Power");
+			snprintf(BNc->name, sizeof(BNc->name), "BN_Power");
 			BigIntPower(BNa, BNb, BNc);
 			BN_print(BNc);
 			break;
@@ -662,7 +671,7 @@ int main()
 	struct bigint BigNumD = {"BN_D", {0}, 0, 0};
 	pBIGINT BNa = &BigNumA, BNb = &BigNumB, BNc = &BigNumC, BNd = &BigNumD;
 
-	strcpy(str, "00024");
+	snprintf(str, sizeof(str), "000000000000");
 	Str_To_BigNum(str, BNa);		// for Huge Number
 	BN_print(BNa);
 
