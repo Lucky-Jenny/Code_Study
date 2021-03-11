@@ -234,9 +234,8 @@ void Str_To_BigNum(char str[], pBIGINT bn)
 		bn->digit = 1;
 	
 	/* reverse the array */
-	for(; j < bn->digit; j++){
+	for(j = 0; j < bn->digit; j++)
 		bn->num[j] = bkup[--i];
-	}
 }
 
 /*
@@ -247,6 +246,11 @@ void Str_To_BigNum(char str[], pBIGINT bn)
 void Int_To_BigNum(int x, pBIGINT bn)
 {
 	char str[32];
+
+	if(x == 0){	// fix stack-buffer-underflow in AddressSanitizer.
+		BN_zero(bn);
+		return;
+	}
 
 	sprintf(str, "%d", x);
 	Str_To_BigNum(str, bn);
@@ -391,8 +395,8 @@ void BigIntMul(pBIGINT BNa, pBIGINT BNb, pBIGINT BNc)
 		carry = 0;
 		for(j = 0; j < BNa->digit; j++){
 			temp = BNb->num[i] * BNa->num[j] + carry;
-			carry = temp/10;							// deal following add
-			temp = temp%10;
+			carry = temp / 10;							// deal following add
+			temp = temp % 10;
 			pos = i + j;
 			/* put temp values to result */
 			result->num[pos] += temp;					// key step
@@ -652,24 +656,27 @@ int main()
 {
 	int i = 0;
 	char str[BN_LEN] = {0};
-	struct bigint BigNumA = {"BN_A", {0}, 0, 0}, BigNumB = {"BN_B", {0}, 0, 0}, BigNumC = {"BN_C", {0}, 0, 0}, BigNumD = {"BN_D", {0}, 0, 0};
+	struct bigint BigNumA = {"BN_A", {0}, 0, 0};
+	struct bigint BigNumB = {"BN_B", {0}, 0, 0};
+	struct bigint BigNumC = {"BN_C", {0}, 0, 0};
+	struct bigint BigNumD = {"BN_D", {0}, 0, 0};
 	pBIGINT BNa = &BigNumA, BNb = &BigNumB, BNc = &BigNumC, BNd = &BigNumD;
 
-	strcpy(str, "0004922567634564");
+	strcpy(str, "00024");
 	Str_To_BigNum(str, BNa);		// for Huge Number
 	BN_print(BNa);
 
-	Int_To_BigNum(-1234, BNb);		// for Small Number
+	Int_To_BigNum(5, BNb);		// for Small Number
 	BN_print(BNb);
 
 	//Calculate_Big_Numer(ADD, BNa, BNb, BNc);
 	//Calculate_Big_Numer(SUB, BNa, BNb, BNc);
 	//Calculate_Big_Numer(MUL, BNa, BNb, BNc);
 	//Calculate_Big_Numer(DIV, BNa, BNb, BNc, BNd);
-	Calculate_Big_Numer(QUO, BNa, BNb, BNc);
-	Calculate_Big_Numer(MOD, BNa, BNb, BNc);
-	//Calculate_Big_Numer(FAC, BNa, BNc);
-	//Calculate_Big_Numer(POW, BNa, BNb, BNc);
+	//Calculate_Big_Numer(QUO, BNa, BNb, BNc);
+	//Calculate_Big_Numer(MOD, BNa, BNb, BNc);
+	Calculate_Big_Numer(FAC, BNa, BNc);
+	Calculate_Big_Numer(POW, BNa, BNb, BNc);
 
 
 }
