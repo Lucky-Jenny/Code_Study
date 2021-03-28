@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #define TEST 1
 #define LEN 10
@@ -8,7 +9,6 @@
   whether has head node.
   To test in convenience, set 0.
 */
-#define HEAD_NODE 0
 
 struct ListNode{
 	int val;
@@ -17,7 +17,7 @@ struct ListNode{
 typedef struct ListNode LNode;
 typedef struct ListNode *slink;
 
-LNode *Create_LNode();				// Initial List
+LNode *Create_LNode(int flag);				// Initial List
 void Print_LNode(LNode *L); 		// Travel List
 void Free_LNode(LNode *L);			// Empty List
 
@@ -48,7 +48,7 @@ void Test_Reverse_all()
 {
 	LNode *A, *reverse_all;
 
-	A = Create_LNode();
+	A = Create_LNode(0);
 	Print_LNode(A);
 
 	reverse_all = reverseList(A);
@@ -115,7 +115,7 @@ void Test_Reverse_part()
 {
 	LNode *A, *reverse_part;
 
-	A = Create_LNode();
+	A = Create_LNode(0);
 	Print_LNode(A);
 
 	reverse_part = reverseBetween(A, 5, 10);
@@ -127,10 +127,72 @@ void Test_Reverse_part()
 	Free_LNode(reverse_part);
 }
 
+/*
+给定一个排序链表，删除所有含有重复数字的节点，只保留原始链表中[没有重复出现]的数字。
+
+E.g. 1->2->3->3->4->4->5
+	--> 1->2->5
+	
+	 1->1->1->2->3
+	--> 2->3
+
+[URL]
+https://leetcode-cn.com/problems/remove-duplicates-from-sorted-list-ii/
+*/
+
+#define LIMIT 256
+int *map;
+
+LNode *Travel_DelDuplink(LNode *s)
+{
+	if(s == NULL)
+		return NULL;
+	int idx = s->val + 100; 		// according to leetcode condition.
+	if(map[idx] > 1){
+		return Travel_DelDuplink(s->next);
+	}else{
+		s->next = Travel_DelDuplink(s->next);
+		return s;
+	}
+}
+
+LNode *deleteDuplicates(LNode *head)
+{
+	int index = 0;
+	LNode *p = head;
+	map = (int*)malloc(sizeof(int) * LIMIT);
+	memset(map, 0, sizeof(int) * LIMIT);
+
+	while(p != NULL){
+		index = p->val + 100;
+		map[index]++;
+		p = p->next;
+	}
+
+	return Travel_DelDuplink(head);
+}
+
+void Test_delDup_link()
+{
+	LNode *A, *delDuplist;
+
+	A = Create_LNode(1);
+	Print_LNode(A);
+
+	delDuplist = deleteDuplicates(A);
+	printf("\033[40;32m");
+	Print_LNode(delDuplist);
+	printf("\033[0m");
+	/* After modify the linkList, it is hard to free(). */
+	Free_LNode(delDuplist);
+}
+
+
 int main()
 {
 	Test_Reverse_all();
 	Test_Reverse_part();
+	Test_delDup_link();
 }
 
 /* ----------------------------- */
@@ -141,12 +203,8 @@ void Print_LNode(LNode *L)
 
 	if(L == NULL)
 		return;
-#if HEAD_NODE
-	p = L->next;
-	printf("[Head]->");
-#else
+
 	p = L;
-#endif
 	while(p != NULL){
 		printf("%d->", p->val);
 		p = p->next;
@@ -154,26 +212,30 @@ void Print_LNode(LNode *L)
 	printf("NULL\n");
 }
 
-LNode *Create_LNode()
+/*
+  0 -> Create by order.
+  1 -> Create in random.
+*/
+LNode *Create_LNode(int flag)
 {
 	LNode *L, *p, *s = NULL;
 
 	L = (LNode *)malloc(sizeof(LNode));
 	p = L;
+	srand((unsigned)time(NULL));
 	for(int i = 1; i <= LEN; i++){
-#if HEAD_NODE
-		/* s is ready for this round */
-		s = (LNode *)malloc(sizeof(LNode));
-		s->val = i;
-		s->next = NULL;
-#else
 		/* s is ready for next round */
-		p->val = i;
+		if(flag == 0)
+			p->val = i;
+		else{
+			p->val = rand() % 8;
+		}
+
 		if(i == LEN)
 			s = NULL;
 		else
 			s = (LNode *)malloc(sizeof(LNode));
-#endif
+
 		p->next = s;
 		p = s;
 	}
