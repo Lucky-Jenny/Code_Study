@@ -1,0 +1,21 @@
+This dir is mainly about IPC--InterProcess Comunication.
+Include:
+* child-process
+* signal
+* semaphore
+* TCP socket
+
+
+************************
+2020-02-15
+Add basic Socket codes, which is just a simple one for study.
+
+************************
+2020-05-04
+Based on last codes, encrypt the text with DES
+
+************************
+2021-06-23
+Change the whole dir, add codes on fork, signal and semaphore.
+
+
