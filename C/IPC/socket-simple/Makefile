@@ -4,8 +4,10 @@
 INCLUDE := DES
 CC := gcc
 
-SERVER_FILE := server.c $(INCLUDE)/DES.c
-CLIENT_FILE := client.c $(INCLUDE)/DES.c
+PUBLIC_FILE := config.c config.h $(INCLUDE)/* #$(INCLUDE)/des-config.c
+
+SERVER_FILE := server.c $(PUBLIC_FILE)
+CLIENT_FILE := client.c $(PUBLIC_FILE)
 
 # U should do 'make' after 'clean'.
 all: server client
