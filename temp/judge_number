@@ -1,0 +1,23 @@
+#!/bin/bash
+
+judge_digit(){
+	#echo "get $1"
+	#if grep '^[[:digit:]]*$' <<< "$1" ; then
+	if echo "$1" | grep '^[[:digit:]]*$'; then
+		return 0
+	else
+		return 1
+	fi
+}
+
+
+x1="4; touch like.tmp;"
+x2="4"
+
+test=$x1
+
+echo "[s] $test"
+judge_digit $test; [[ $? = 0 ]] && echo "Is digit." || echo "Not digit.";
+
+
+
