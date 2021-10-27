@@ -8,10 +8,10 @@ print(lista[-1])	# e  --> the last one
 print(lista[-3:-1])	# ['c', 'd'] exclude -1
 print(len(lista))	# 5
 
-lista.append("f");print(lista)	# ['a', 'b', 'c', 'd', 'e', 'f'] 
-lista.insert(2,"x");print(lista)# ['a', 'b', 'x', 'c', 'd', 'e', 'f'] 
-lista.remove("x");print(lista)	# ['a', 'b', 'c', 'd', 'e', 'f']	
-lista.pop();print(lista)		# ['a', 'b', 'c', 'd', 'e'] 
+lista.append("f");print(lista)	# ['a', 'b', 'c', 'd', 'e', 'f']
+lista.insert(2,"x");print(lista)# ['a', 'b', 'x', 'c', 'd', 'e', 'f']
+lista.remove("x");print(lista)	# ['a', 'b', 'c', 'd', 'e', 'f']
+lista.pop();print(lista)		# ['a', 'b', 'c', 'd', 'e']
 del lista[0];print(lista)		# ['b', 'c', 'd', 'e']
 lista.reverse();print(lista)	# ['e', 'd', 'c', 'b']
 lista.clear();print(lista)		# []
@@ -24,7 +24,7 @@ listb = ["d", "e", "f"]
 listc = lista + listb	# link method1 +
 lista.extend(listb)		# link method2 extend(list)
 for x in listb:			# link method3 append(item)
-	lista.append(x)	
+	lista.append(x)
 
 name = list("xiao")		# ['x', 'i', 'a', 'o']
 print(name)
@@ -42,8 +42,8 @@ tuplea += tupleb	# link two tuples by +=
 print(tuplea)
 
 tuplea = ("apple")
-print(type(tuplea))	# <class 'str'> 
-tupleb = ("apple",) 
+print(type(tuplea))	# <class 'str'>
+tupleb = ("apple",)
 print(type(tupleb)) # <class 'tuple'>  must have ','
 
 tuplea = ("a", "f", "t", "a", "b", "t", "f", "b", "a")
@@ -65,35 +65,40 @@ del seta
 seta = {"a", "b", "c"}
 setb = {"d", "e", "f"}
 print(("a = {0}\nb = {1}").format(seta, setb))
-seta.update(setb)		# link --> update, union	
+seta.update(setb)		# link --> update, union
 setc = seta.union(setb)	# update & union will remove duplicate items.
 print(("a.update(b) = {0}\na.union(b)  = {1}").format(seta, setc))
 
 
 print("-------------------------------Dictionary")
-# Python------Dictionary
-dicta = {
+'''
+Python------Dictionary
+Like Set, Dict is out-of-order. So it has no index.
+
+
+'''
+dict_a = {
 	"name": "LX",
 	"age" : 23,
 	"fav" : "ball"
-}		# like Set, Dict is out-of-order. It doesn't have index.
-print(dicta)
-x = dicta["fav"]	# <==> dicta.get("fav")
+}
+print(dict_a)
+x = dict_a["fav"]	# <==> dicta.get("fav")
 print(x)
 print("loop get:")
 
-for x in dicta.values():	# loop get values
+for x in dict_a.values():	# loop get values
 	print(x)
 
-for x, y in dicta.items():	# loop get items
+for x, y in dict_a.items():	# loop get items
 	print(x,y)
 
-dicta["like"] = "play"		# add an item
-print(dicta)
+dict_a["like"] = "play"		# add an item
+print(dict_a)
 
-dicta.pop("like")			# delete item-"like"
-dicta.popitem()				# delete an item in random
-dicta.clear()				# clear
+dict_a.pop("like")			# delete item-"like"
+dict_a.popitem()				# delete an item in random
+dict_a.clear()				# clear
 #dictb = dicta		wrong!!!
 dictb = dicta.copy()		# assign values to dictb
 
