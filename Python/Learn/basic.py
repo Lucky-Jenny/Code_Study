@@ -35,3 +35,8 @@ print("-------------------------------Input")
 print("Enter your name:")
 print("Hello",input())		# input() for usr to input string.
 
+
+a = [0,1,2,3,4]
+print(a[-1], a[:-1], a[1:-1], a[::-1])
+
+
