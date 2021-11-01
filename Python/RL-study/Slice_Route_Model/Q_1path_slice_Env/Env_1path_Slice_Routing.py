@@ -1,3 +1,5 @@
+import time
+
 import numpy as np
 import queue
 
@@ -19,7 +21,7 @@ state_done = 4          # 10
 Reward = [-30, 1, -10, -100, 10]
 
 
-class QSliceRoutingEnv:
+class Q1PathRoutingEnv:
     """
     note
     """
@@ -43,6 +45,8 @@ class QSliceRoutingEnv:
         self.Task_List = task_list
         self.T_len = len(task_list)
         self.T_idx = 0
+        # 任务路径表
+        self.Task_Path = {h: [] for h in range(self.T_len)}
 
         # 时隙限制
         self.time_limit = 100
@@ -72,10 +76,10 @@ class QSliceRoutingEnv:
         for t in range(self.time_limit):  # 时隙
             has_stuck = 0
             ret_st = self.add_new_task(task_space, router_space)
-            '''
+            ''''''
             if ret_st == state_stuck:
                 has_stuck = 1
-            '''
+
             # test
             # print('[', t, ']', 'R_space:', router_space)
 
@@ -86,10 +90,6 @@ class QSliceRoutingEnv:
                     continue
                 # 每个节点在t时间能够处理的数据量，处理缓存: Forward Buff
                 fwd_buff = self.Router_Perform[r][0]
-
-                # test
-                #print('    Q[', r, ']:', self.Router_Task_Queue[r], end=' ')
-
                 '''
                 按照每个节点的任务队列，按buff大小依次对队列中的数据分片进行路由
                 1. 只看队列的第一项，直到buff=0
@@ -103,18 +103,19 @@ class QSliceRoutingEnv:
                     s = self.Router_Task_Queue[r][0]
 
                     # test
+                    # print('    Q[', r, ']:', self.Router_Task_Queue[r], end=' ')
                     # print(' v[', s, ']:', task_space[s][0])
 
-                    # 执行路由（在其中选取动作）
-                    ps_new, state_new, fwd_buff = self.slice_action(s, r, fwd_buff, task_space[s],
-                                                                    router_space, q_table[s])
+                    # 从路径表中选取动作，执行路由
+                    action = self.select_action(s, r)
+                    ps_new, state_new, fwd_buff = self.slice_action(s, r, action, fwd_buff, task_space[s], router_space)
 
                     if state_new == state_stuck:
                         has_stuck = 1
                     # 检查该任务是否全部传输完成：列表全为0 && 状态值=0
                     'any() --> False: list所有元素全为 0 / 空 / false'
                     if any(task_space[s][0]) is False and task_space[s][1] == 0:
-                        # print('task[', s, '] is finished !!!\n------------')
+                        print('task[', s, '] is finished !!!\n------------')
                         task_space[s][1] = 1
                         task_mark += 1
 
@@ -130,15 +131,22 @@ class QSliceRoutingEnv:
 
         return t, stk_sum / t
 
-    def slice_action(self, t_idx, r_idx, fwd_buff, t_state, router_spc, q_array):
+    def select_action(self, t_idx, r_idx):
+        if r_idx == self.R_target:
+            return r_idx
+        # 找到当前索引，+1
+        id_path = self.Task_Path[t_idx].index(r_idx) + 1
+        return self.Task_Path[t_idx][id_path]
+
+    def slice_action(self, t_idx, r_idx, act, fwd_buff, t_state, router_spc):
         """
         分片路由，更新状态。
         :param t_idx:
         :param r_idx:
+        :param act:
         :param fwd_buff:
         :param t_state:
         :param router_spc:
-        :param q_array: Q[t_id]
         :return: 更新后的节点位置，网络状态，buff容量
         """
         t_vector = t_state[0]
@@ -160,7 +168,6 @@ class QSliceRoutingEnv:
             fwd_buff = self.update_queue_and_buff(fwd_buff, r_idx, None, None, t_size, buff_not_enough)
             return r_idx, state_done, fwd_buff
 
-        act = self.select_action(r_idx, t_size, router_spc, q_array)
         # Invalid action
         if self.Action[r_idx][act] == 0 and r_idx != act:
             return r_idx, state_invalid, fwd_buff
@@ -184,39 +191,6 @@ class QSliceRoutingEnv:
             return act, state_reverse, fwd_buff
 
         return act, state_normal, fwd_buff
-
-    def select_action(self, r_id, t_size, router_spc, q_array):
-        """
-
-        :param r_id:  Index of router
-        :param t_size:
-        :param router_spc:
-        :param q_array:
-        :return:
-        """
-        act = np.argmax(q_array[r_id])
-        is_invalid = False
-        # 如果无法从Q表中获取有效值，采用随机动作(必须有效)
-        if self.Action[r_id][act] == 0:
-            is_invalid = True
-        else:
-            # 如果反向，检查是否陷入了死循环
-            if act < r_id:
-                is_invalid = True
-                '''
-                act_nxt = np.argmax(q_array[act])
-                if act_nxt == r_id:
-                    is_invalid = True
-                '''
-
-        if is_invalid:
-            # 给予方向性，如果存在不堵塞决策，直接返回；否则随机决策
-            for a in range(r_id, self.R_len, 1):
-                if self.Action[r_id][a] == 1:
-                    act = a
-                    if t_size <= router_spc[a]:
-                        break
-        return act
 
     def update_queue_and_buff(self, buff, r_idx, nxt_idx, t_idx, t_size, is_not_enough):
         """
@@ -245,6 +219,40 @@ class QSliceRoutingEnv:
                self.Router_Task_Queue[nxt_idx][-1] != t_idx:
                 self.Router_Task_Queue[nxt_idx].append(t_idx)
         return buff
+
+    def generate_path_from_q_table(self, q_table):
+        for tk in range(self.T_len):
+            idx = 0
+            self.Task_Path[tk].append(idx)
+            while idx < self.R_target:
+                idx = self.next_node(idx, q_table[tk])
+                self.Task_Path[tk].append(idx)
+
+    def next_node(self, r_id, q_array):
+        """
+
+        :param r_id: Index of router
+        :param q_array:
+        :return:
+        """
+        act = np.argmax(q_array[r_id])
+        is_invalid = False
+        # 如果无法从Q表中获取有效值，采用随机动作(必须有效)
+        if self.Action[r_id][act] == 0:
+            is_invalid = True
+        else:
+            # 如果反向，检查是否陷入了死循环
+            if act < r_id:
+                is_invalid = True
+
+        if is_invalid:
+            # nxt = self.random_action()
+            # 给予方向性
+            for a in range(r_id, self.R_len, 1):
+                if self.Action[r_id][a] == 1:
+                    act = a
+                    break
+        return act
 
     def generate_q_table_while_routing(self, task_space, router_space, q_table):
         """

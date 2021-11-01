@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import time
-from Env_Q_Slice_Routing import QSliceRoutingEnv
+from Env_1path_Slice_Routing import Q1PathRoutingEnv
 
 from Model_normal import Router_Perform
 from Model_normal import Action_Space
@@ -15,7 +15,7 @@ R_target = R_len - 1
 
 # 数据量
 T_len = 10          # 也代表了步长
-T_size_start = 40
+T_size_start = 140
 T_size_end = 240
 # T_size_step = 10
 
@@ -47,11 +47,11 @@ file_obj = open(pathname, 'a')
 
 for t_size in range(T_size_start, T_size_end, T_len):
     Observe_Space[0].append(t_size)
-    print(t_size, end=' ')
+    print(t_size)
     # 产生数据
     # Task_List = np.random.poisson(t_size, T_len)
     Task_List = np.arange(t_size, t_size + T_len, 1)
-    env_route = QSliceRoutingEnv(Router_Perform, Action_Space, Task_List)
+    env_route = Q1PathRoutingEnv(Router_Perform, Action_Space, Task_List)
     '迭代更新Q表'
     for n in range(Iterations):     # 迭代次数
         env_route.reset_space(Task_Space, Router_Space)
@@ -68,14 +68,15 @@ for t_size in range(T_size_start, T_size_end, T_len):
     file_obj.write('\n---------------\n')
 
     '分片仿真'
-    # Path_Task = {c: [0, []] for c in range(T_len)}
+    # 根据Q表为每个任务生成固定路径，让分片都按照该路径
+    env_route.generate_path_from_q_table(Q)
+    print(env_route.Task_Path)
     env_route.reset_space(Task_Space, Router_Space)
     times, stk_prob = env_route.start_slice_routing(Task_Space, Router_Space, Q)
 
     # 记录
     Observe_Space[1].append(times)
     Observe_Space[2].append(stk_prob)
-
 file_obj.close()
 
 

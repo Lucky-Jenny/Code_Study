@@ -1,10 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import time
-from Env_Q_Slice_Routing import QSliceRoutingEnv
-
-from Model_normal import Router_Perform
-from Model_normal import Action_Space
+from Env_SPF_Slice_Routing import SpfSliceRoutingEnv
+from Model_normal import Router_Perform, Action_Space
 
 R_len = len(Router_Perform)
 R_start = 0
@@ -26,24 +24,12 @@ Iterations = 800
 # 状态 --> -1: 未加入  0: 正常  1: 已完成  2: 被抛弃
 Task_Space = {x: [np.zeros(R_len), -1] for x in range(T_len)}
 
-# Q表 (不用加无效动作的Q值)
-Q = np.zeros((T_len, R_len, R_len))
-
 # 路由节点状态图
 Router_Space = np.zeros(R_len)
-
-# 路径表
-Path_Task = {c: [] for c in range(T_len)}
 
 Observe_Space = {o: [] for o in range(3)}
 
 '---------------- 开始 ----------------'
-
-# 产生文件名+时间戳
-tm = time.strftime('%H-%M-%S', time.localtime())
-filename = 'Q_test_' + tm + '.txt'
-pathname = './log/' + filename
-file_obj = open(pathname, 'a')
 
 for t_size in range(T_size_start, T_size_end, T_len):
     Observe_Space[0].append(t_size)
@@ -51,32 +37,16 @@ for t_size in range(T_size_start, T_size_end, T_len):
     # 产生数据
     # Task_List = np.random.poisson(t_size, T_len)
     Task_List = np.arange(t_size, t_size + T_len, 1)
-    env_route = QSliceRoutingEnv(Router_Perform, Action_Space, Task_List)
-    '迭代更新Q表'
-    for n in range(Iterations):     # 迭代次数
-        env_route.reset_space(Task_Space, Router_Space)
-        env_route.generate_q_table_while_routing(Task_Space, Router_Space, Q)
-    # 小数点保留n位
-    Q = np.around(Q, decimals=3)
-
-    # 把Q表写入文件中
-    str_size = '[ d_size: %d ]\n' % t_size
-    file_obj.write(str_size)
-    for n in range(T_len):
-        str_arr = '(%d)\n' % n + '\n'.join('\t'.join('%0.2f' % x for x in Q[n][y]) for y in range(R_len)) + '\n\n'
-        file_obj.write(str_arr)
-    file_obj.write('\n---------------\n')
-
+    env_route = SpfSliceRoutingEnv(Router_Perform, Action_Space, Task_List)
+    s_path = env_route.get_1_path_from_dijkstra(R_start, R_target)
     '分片仿真'
     # Path_Task = {c: [0, []] for c in range(T_len)}
     env_route.reset_space(Task_Space, Router_Space)
-    times, stk_prob = env_route.start_slice_routing(Task_Space, Router_Space, Q)
+    times, stk_prob = env_route.start_slice_routing_in_spf(Task_Space, Router_Space)
 
     # 记录
     Observe_Space[1].append(times)
     Observe_Space[2].append(stk_prob)
-
-file_obj.close()
 
 
 # Mark = [['Stuck Probability', 'stuck_prob'], ['Total Time', 'use_time']]
