@@ -71,8 +71,7 @@ class Q1PathRoutingEnv:
         :return: times， stuck_prob
         """
         t = 0
-        stk_sum = 0
-        task_mark = 0
+        stk_sum, task_mark, joule = 0, 0, 0
         for t in range(self.time_limit):  # 时隙
             has_stuck = 0
             ret_st = self.add_new_task(task_space, router_space)
@@ -122,6 +121,8 @@ class Q1PathRoutingEnv:
                     # 处理量到达/堵塞，直接结束
                     if fwd_buff == 0 or has_stuck:
                         break
+                # 统计能耗
+                joule += self.Router_Perform[r][0]
 
             if has_stuck:
                 stk_sum += 1
@@ -129,7 +130,7 @@ class Q1PathRoutingEnv:
             if task_mark == self.T_len:
                 break
 
-        return t, stk_sum / t
+        return t, stk_sum / t, joule
 
     def select_action(self, t_idx, r_idx):
         if r_idx == self.R_target:

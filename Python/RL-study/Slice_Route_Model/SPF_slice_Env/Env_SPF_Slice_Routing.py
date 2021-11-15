@@ -49,8 +49,7 @@ class SpfSliceRoutingEnv:
         :return: times， stuck_prob
         """
         t = 0
-        stk_sum = 0
-        task_mark = 0
+        stk_sum, task_mark, joule = 0, 0, 0
         for t in range(self.time_limit):
             has_stuck = 0
             ret_st = self.add_new_task(task_space, router_space)
@@ -92,6 +91,8 @@ class SpfSliceRoutingEnv:
                     # 处理量到达/堵塞，直接结束
                     if fwd_buff == 0 or has_stuck:
                         break
+                # 统计能耗
+                joule += self.Router_Perform[r][0]
 
             if has_stuck:
                 stk_sum += 1
@@ -99,7 +100,7 @@ class SpfSliceRoutingEnv:
             if task_mark == self.T_len:
                 break
 
-        return t, stk_sum / t
+        return t, stk_sum / t, joule
 
     def do_route_spf(self, t_idx, r_idx, fwd_buff, t_state, router_spc):
         """

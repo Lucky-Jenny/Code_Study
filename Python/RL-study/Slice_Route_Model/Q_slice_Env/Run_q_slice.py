@@ -22,6 +22,5 @@ def run_q_slice_model(env_route, router_spc, task_spc, q_tb):
 
     '根据Q表进行仿真'
     env_route.reset_space(task_spc, router_spc)
-    times, stk_prob = env_route.start_slice_routing(task_spc, router_spc, q_tb)
+    return env_route.start_slice_routing(task_spc, router_spc, q_tb)
 
-    return times, stk_prob
