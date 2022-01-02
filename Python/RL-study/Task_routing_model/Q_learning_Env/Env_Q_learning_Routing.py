@@ -87,9 +87,9 @@ class QLRoutingEnv:
                 if mode == 1:
                     # 探索策略
                     action = self.explore_exploit(q_table[s][ps])
-                    # 执行动作并返回奖励
+                    # 执行动作并返回更新后的状态
                     ps_new, state_new = self.action_route(task_space[s], action, router_space)
-                    # 根据奖励，执行Bellman更新
+                    # 根据状态，执行Bellman更新
                     q_table[s] = self.update_q_table(ps, action, ps_new, state_new, q_table[s])
                 else:
                     # 仿真
