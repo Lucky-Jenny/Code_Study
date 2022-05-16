@@ -1,0 +1,12 @@
+[submodule "Python/MEC_RL_Routing/multi_slice_routing_model"]
+	path = Python/MEC_RL_Routing/multi_slice_routing_model
+	url = /Users/lx/tmp/multi_slice_routing_model
+[submodule "Python/MEC_RL_Routing/single_silce_routing_model"]
+	path = Python/MEC_RL_Routing/single_silce_routing_model
+	url = /Users/lx/tmp/single_slice_routing_model
+[submodule "Python/MEC_RL_Routing/ecn_esps"]
+	path = Python/MEC_RL_Routing/ecn_esps
+	url = /Users/lx/tmp/ecn-esps
+[submodule "Python/MEC_RL_Routing/ecan_model"]
+	path = Python/MEC_RL_Routing/ecan_model
+	url = /Users/lx/tmp/ecan_model/
